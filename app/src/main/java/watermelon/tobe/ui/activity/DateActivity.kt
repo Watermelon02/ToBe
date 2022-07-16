@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.widget.ViewPager2
-import kotlinx.coroutines.delay
 import watermelon.lightmusic.base.BaseActivity
 import watermelon.tobe.R
 import watermelon.tobe.databinding.ActivityDateBinding
@@ -20,7 +19,6 @@ import watermelon.tobe.util.local.DateCalculator.lastDay
 import watermelon.tobe.util.local.DateCalculator.lastMonth
 import watermelon.tobe.util.local.DateCalculator.lastYear
 import watermelon.tobe.viewmodel.DateViewModel
-import java.util.*
 
 class DateActivity : BaseActivity() {
     lateinit var viewModel: DateViewModel
@@ -36,7 +34,7 @@ class DateActivity : BaseActivity() {
             R.layout.activity_date
         )
         dateBinding.apply {
-            activityDateViewPagerMonth.adapter = MonthAdapter(this@DateActivity, TOTAL_MONTH)
+            activityDateViewPagerMonth.adapter = MonthAdapter(this@DateActivity, TOTAL_MONTH,viewModel)
             //旋转180度，让其向左排列月份；同时在MonthFragment中让里面的内容翻转180度,以正常显示内容
             activityDateViewPagerMonth.rotationY = 180f
             activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2

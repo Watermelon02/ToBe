@@ -1,25 +1,41 @@
 package watermelon.tobe.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import watermelon.tobe.service.HolidayService
-import watermelon.tobe.util.local.DateCalculator
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.stateIn
+import watermelon.lightmusic.util.extension.toast
+import watermelon.tobe.repo.repository.DateRepository
 
 /**
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/14 14:32
  */
-class DateViewModel  : ViewModel() {
+class DateViewModel : ViewModel() {
 
-    suspend fun queryHoliday(date:String){
-        val dateForQuery = DateCalculator.formatDateForQueryHoliday(date)
-        HolidayService.INSTANCE.queryHoliday(dateForQuery)
+    var collapsedState = CollapsedState.COLLAPSED
+    suspend fun queryHoliday(date: String) = DateRepository.queryHoliday(date).catch {
+        Log.d("testTag", "(DateViewModel.kt:22) -> ${it.message}")
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null
+    )
+
+
+    suspend fun queryMonth(month: String) = DateRepository.queryMonth(month).catch {
+        Log.d("testTag", "(DateViewModel.kt:32) -> ${it.message}")
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null
+    )
+
+    //上方vp的折叠状态
+    enum class CollapsedState {
+        EXPAND, COLLAPSED, HALF_EXPAND
     }
-
-    suspend fun queryMonth(month:String){
-        val monthForQuery = DateCalculator.formatDateForQueryMonth(month)
-        HolidayService.INSTANCE.queryMonth(monthForQuery)
-    }
-
-//    fun queryDay(time: String) = dayDatabase.getDayDao().queryDay(time)
 }

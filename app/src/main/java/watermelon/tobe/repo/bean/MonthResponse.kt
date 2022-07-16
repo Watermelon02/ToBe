@@ -1,4 +1,4 @@
-package watermelon.tobe.bean
+package watermelon.tobe.repo.bean
 
 data class MonthResponse(
     val code: Int,
