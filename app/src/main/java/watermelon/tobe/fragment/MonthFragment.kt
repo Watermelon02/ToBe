@@ -3,13 +3,11 @@ package watermelon.tobe.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
-import watermelon.tobe.customview.StickGridLayoutManager
+import watermelon.tobe.view.StickGridLayoutManager
 import watermelon.tobe.databinding.FragmentMonthBinding
 import watermelon.tobe.ui.adapter.DaysAdapter
 import watermelon.tobe.util.local.DateCalculator

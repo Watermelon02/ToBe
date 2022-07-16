@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import watermelon.lightmusic.base.CrashHandler
 import watermelon.lightmusic.util.network.ApiGenerator
-import watermelon.tobe.database.DayDatabase
 
 /**
  * description ： TODO:类的作用
@@ -21,7 +20,7 @@ class BaseApp: Application() {
         super.onCreate()
         appContext = this
         ApiGenerator.init(applicationContext)
-        DayDatabase.createInstance(this)
+//        DayDatabase.createInstance(this)
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler)
     }
 }

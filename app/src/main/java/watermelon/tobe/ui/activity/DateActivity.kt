@@ -24,7 +24,7 @@ import java.util.*
 
 class DateActivity : BaseActivity() {
     lateinit var viewModel: DateViewModel
-var isScrolling = false
+    var isScrolling = false
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -36,7 +36,6 @@ var isScrolling = false
             R.layout.activity_date
         )
         dateBinding.apply {
-            activityDateNumberMonth.setNumber(DateCalculator.calendar2[Calendar.MONTH] + 1)
             activityDateViewPagerMonth.adapter = MonthAdapter(this@DateActivity, TOTAL_MONTH)
             //旋转180度，让其向左排列月份；同时在MonthFragment中让里面的内容翻转180度,以正常显示内容
             activityDateViewPagerMonth.rotationY = 180f
@@ -51,7 +50,8 @@ var isScrolling = false
                     val day = it.split("-")[2].toInt()
                     if (year != lastYear || month != lastMonth) {
                         //当切换了月份后点击日期
-                        DateCalculator.getMonthDays(DateCalculator.calculateDiffMonth(year, month))
+                        val diff = DateCalculator.calculateDiffMonth(year, month)
+                        DateCalculator.getMonthDays(diff)
                     }
                     //day-1才是对应的index
                     activityDateViewPagerDay.currentItem = day - 1
@@ -80,7 +80,7 @@ var isScrolling = false
             //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
             activityDateViewPagerMonth.registerOnPageChangeCallback(object :
                 ViewPager2.OnPageChangeCallback() {
-                private var lastPosition = 0
+                private var lastPosition = TOTAL_MONTH/2
                 override fun onPageScrolled(
                     position: Int,
                     positionOffset: Float,
@@ -108,9 +108,8 @@ var isScrolling = false
                     lastPosition = position
                 }
             })
-            //奇怪的bug的临时解决方案，待修
-            activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2 -1
-            activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
+
+
         }
     }
 }

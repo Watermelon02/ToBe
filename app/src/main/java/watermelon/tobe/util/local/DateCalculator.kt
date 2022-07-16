@@ -1,6 +1,7 @@
 package watermelon.tobe.util.local
 
 import android.annotation.SuppressLint
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 
@@ -41,12 +42,7 @@ object DateCalculator {
      * @return 获取到目标月份的日期格式字符串ArrayList*/
     suspend fun getMonthDays(diff: Int) {
         val mDays = ArrayList<String>()
-        var diffYear = (calendar1[Calendar.MONTH] + diff) / 12
-        val diffMonth = diff % 12
-        if (calendar1[Calendar.MONTH] + diff < 0) diffYear += -1
-        if (calendar1[Calendar.MONTH] + diff > 12) diffYear += 1
-        calendar1.roll(Calendar.YEAR, diffYear)
-        calendar1.roll(Calendar.MONTH, diffMonth)
+        calendar1.add(Calendar.MONTH,diff)
         calendar1[Calendar.DATE] = 1 //把日期设置为当月第一天
         calendar1.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
         for (i in 1..calendar1[Calendar.DATE]) {
@@ -59,18 +55,33 @@ object DateCalculator {
      * @return 当前月份每天以yy-MM-DD的String存储的Arraylist*/
     fun getDays(diff: Int): ArrayList<String> {
         val mDays = ArrayList<String>()
-        var diffYear = (calendar2[Calendar.MONTH] + diff) / 12
-        if (calendar2[Calendar.MONTH] + diff < 0) diffYear += -1
-        if (calendar2[Calendar.MONTH] + diff > 12) diffYear += 1
-        val diffMonth = diff % 12
-        calendar2.roll(Calendar.YEAR, diffYear)
-        calendar2.roll(Calendar.MONTH, diffMonth)
+        calendar2.add(Calendar.MONTH,diff)
         calendar2[Calendar.DATE] = 1 //把日期设置为当月第一天
         calendar2.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
+
         for (i in 1..calendar2[Calendar.DATE]) {
             mDays.add("${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH]}-$i")
         }
         return mDays
     }
 
+    /**将yyyy-MM-dd的日期格式化为yyyyMMdd格式以进行网络请求*/
+    fun formatDateForQueryHoliday(date:String): String {
+        val list = date.split("-")
+        var dateForQuery = ""
+        for (i in 0..2){
+            dateForQuery+=list[i]
+        }
+        return dateForQuery
+    }
+
+    /**将yyyy-MM-dd的日期格式化为yyyyMM格式以进行网络请求*/
+    fun formatDateForQueryMonth(date:String): String {
+        val list = date.split("-")
+        var monthForQuery = ""
+        for (i in 0..1){
+            monthForQuery+=list[i]
+        }
+        return monthForQuery
+    }
 }

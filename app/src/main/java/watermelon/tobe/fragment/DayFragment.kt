@@ -27,16 +27,21 @@ class DayFragment(val time: String,val viewModel: DateViewModel) : Fragment() {
     ): View {
         val monthBinding =
             FragmentDayBinding.inflate(LayoutInflater.from(context), null, false)
+        val timeList = time.split("-")
+        val year = timeList[0].toInt()
+        //Calendar.month为序数，此处加一
+        val month = timeList[1].toInt()+1
+        val day = timeList[2].toInt()
         //去除yyyy,取MM-dd
-        monthBinding.moduleDateFragmentDayTitle.text = time.substring(5)
-        safeLaunch {
+        monthBinding.moduleDateFragmentDayTitle.text = "${month}-${day}"
+        /*safeLaunch {
             //获取日期对应的数据
             viewModel.queryDay(time)
                 .collect {
                     monthBinding.moduleDateFragmentDayTitle.text = "${time.split("-")[1].toInt()+1}-"+time.split("-")[2]
                     monthBinding.moduleDateFragmentDayText.text = it?.content
                 }
-        }
+        }*/
         return monthBinding.root
     }
 }

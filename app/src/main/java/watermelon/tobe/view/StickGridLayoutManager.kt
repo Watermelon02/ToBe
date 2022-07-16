@@ -1,4 +1,4 @@
-package watermelon.tobe.customview
+package watermelon.tobe.view
 
 import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager

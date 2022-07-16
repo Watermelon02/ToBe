@@ -1,11 +1,8 @@
 package watermelon.tobe.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import watermelon.tobe.database.DayDatabase
+import watermelon.tobe.service.HolidayService
+import watermelon.tobe.util.local.DateCalculator
 
 /**
  * author : Watermelon02
@@ -13,15 +10,16 @@ import watermelon.tobe.database.DayDatabase
  * date : 2022/7/14 14:32
  */
 class DateViewModel  : ViewModel() {
-    private val dayDatabase by lazy { DayDatabase.getInstance() }
 
-    fun queryDays(time: String) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                /*Days.postValue(DayDatabase.getDayDao().queryDays(time) as List<Day>?)*/
-            }
-        }
+    suspend fun queryHoliday(date:String){
+        val dateForQuery = DateCalculator.formatDateForQueryHoliday(date)
+        HolidayService.INSTANCE.queryHoliday(dateForQuery)
     }
 
-    fun queryDay(time: String) = dayDatabase.getDayDao().queryDay(time)
+    suspend fun queryMonth(month:String){
+        val monthForQuery = DateCalculator.formatDateForQueryMonth(month)
+        HolidayService.INSTANCE.queryMonth(monthForQuery)
+    }
+
+//    fun queryDay(time: String) = dayDatabase.getDayDao().queryDay(time)
 }

@@ -1,7 +1,7 @@
 package watermelon.tobe.bean
 
-data class HolidayResponse(
+data class MonthResponse(
     val code: Int,
-    val `data`: Day,
+    val `data`: List<Day>,
     val msg: String
 )

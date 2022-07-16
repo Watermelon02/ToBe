@@ -17,7 +17,8 @@ import kotlin.reflect.KClass
  * date : 2022/6/20 11:01
  */
 object ApiGenerator {
-
+    const val APP_ID ="e1fkqpoasgomn92q"
+    const val APP_SECRET = "RnZHRGR5ZTNkaTVGR0F2ekRObSt4UT09"
     private lateinit var instance: Retrofit
 
     fun <T : Any> getApiService(
@@ -39,7 +40,7 @@ object ApiGenerator {
 
     fun init(context: Context) {
         instance =
-            Retrofit.Builder().baseUrl("http://timor.tech/api/holiday")
+            Retrofit.Builder().baseUrl("https://www.mxnzp.com/api/holiday/")
                 .client(OkHttpClient().newBuilder().defaultOkhttpConfig(context))
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create()).build()
