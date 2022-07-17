@@ -22,7 +22,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
     private var lastY = 0f
     private var lastX = 0f
     private var totalDy = 0f
-    var isPulling = false
+    var isScrolling = false
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
     var collapsedHeight = 0
     var expandedHeight = 0
@@ -70,7 +70,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                 val dx = event.rawX - lastX
                 val childHeight1 = getChildAt(4).height
                 if ((dy > 0 && childHeight1 + dy <= maxDy) || (dy < 0 && childHeight1 >= minDy)) {
-                    isPulling = true
+                    isScrolling = true
                     getChildAt(4).updateLayoutParams<LayoutParams> {
                         this.height = childHeight1 + dy.toInt()
                         requestLayout()
@@ -94,7 +94,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     expandAnimator.doOnEnd {
                         collapsedState = DateViewModel.CollapsedState.EXPAND
                         expandListener?.invoke()
-                        isPulling = false
+                        isScrolling = false
                     }
                     expandAnimator.start()
                 } else {
@@ -108,7 +108,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     collapseAnimator.doOnEnd {
                         collapsedState = DateViewModel.CollapsedState.COLLAPSED
                         collapseListener?.invoke()
-                        isPulling = false
+                        isScrolling = false
                     }
                     collapseAnimator.start()
                 }

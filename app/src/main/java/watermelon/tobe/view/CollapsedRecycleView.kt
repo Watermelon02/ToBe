@@ -1,8 +1,10 @@
 package watermelon.tobe.view
 
 import android.content.Context
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.ViewParent
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
@@ -18,11 +20,15 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
     private var firstInit = true
     private var collapsedHeight = 0
     private var expandedHeight = 0
+    private var childRect: Rect = Rect()
+
+    //上一个被选中的child
+    private var lastChosenChild = -1
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
         set(value) {
             if (value != field) {
                 firstInit = true
-                for (i in 0.. childCount){
+                for (i in 0..childCount) {
                     getChildAt(i)?.let {
                         (it as CollapseDayItem).collapsedState = collapsedState
                     }
@@ -40,7 +46,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
             }
             for (i in 0..childCount) {
                 val child = getChildAt(i)
-                if (child!=null){
+                if (child != null) {
                     getChildAt(i).updateLayoutParams<MarginLayoutParams> {
                         this.bottomMargin =
                             ((MeasureSpec.getSize(heightSpec) - collapsedHeight) * 0.1).toInt()
@@ -59,7 +65,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
             }
             for (i in 0..childCount) {
                 val child = getChildAt(i)
-                if (child!=null) {
+                if (child != null) {
                     child.updateLayoutParams<MarginLayoutParams> {
                         this.bottomMargin =
                             ((MeasureSpec.getSize(heightSpec) - collapsedHeight) * 0.1).toInt()
@@ -73,7 +79,37 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
         super.onMeasure(widthSpec, heightSpec)
     }
 
-    fun getCollapseLayout(parent:ViewParent): CollapseLayout {
+    override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
+        if (e.action == MotionEvent.ACTION_UP) {
+            val y = e.rawY
+            val x = e.rawX
+            for (i in 0..childCount) {
+                val child = getChildAt(i)
+                if (child != null) {
+                    child.getGlobalVisibleRect(childRect)
+                    if (childRect.contains(x.toInt(), y.toInt())) {//如果选中了该view
+                        if (i != lastChosenChild) {
+                            (child as CollapseDayItem).chooseAnimate()
+                            if (lastChosenChild != -1) (getChildAt(lastChosenChild) as CollapseDayItem).notChooseAnimate()
+                            lastChosenChild = i
+                        }
+                    }
+                }
+            }
+        }
+        return super.onInterceptTouchEvent(e)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        //切换月份时将已经选中的日期的背景还原
+        getChildAt(lastChosenChild)?.let {
+            (getChildAt(lastChosenChild) as CollapseDayItem).notChooseAnimate()
+        }
+        lastChosenChild = -1
+    }
+
+    fun getCollapseLayout(parent: ViewParent): CollapseLayout {
         return if (parent is CollapseLayout) parent else getCollapseLayout(parent.parent)
     }
 }

@@ -63,4 +63,7 @@ dependencies {
     implementation "androidx.room:room-ktx:2.4.2"
     kapt  "androidx.room:room-compiler:2.4.2"
 
+    //用于获取图片的颜色
+    implementation 'androidx.palette:palette:1.0.0'
+
 }

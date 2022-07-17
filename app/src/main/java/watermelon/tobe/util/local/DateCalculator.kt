@@ -48,7 +48,7 @@ object DateCalculator {
         calendar1[Calendar.DATE] = 1 //把日期设置为当月第一天
         calendar1.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
         for (i in 1..calendar1[Calendar.DATE]) {
-            val date = "${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH]+1}-$i"
+            val date = "${calendar1[Calendar.YEAR]}-${calendar1[Calendar.MONTH]+1}-$i"
             mDays.add(Day(date = date))
         }
         days.emit(mDays)

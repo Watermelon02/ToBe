@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.databinding.ItemDayBinding
 import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.util.local.DateCalculator
+import watermelon.tobe.view.CollapseDayItem
 import watermelon.tobe.viewmodel.DateViewModel
 
 /**
@@ -23,7 +24,6 @@ class DaysAdapter(var days: List<Day>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val viewHolder = ViewHolder(ItemDayBinding.inflate(LayoutInflater.from(parent.context)))
         viewHolder.dateBinding.root.setOnClickListener {
-            Log.d("testTag", "(DaysAdapter.kt:26) -> ${days[viewHolder.adapterPosition].date}")
             //更改flow的值,使DateActivity下方的日期详情vp跳转
             DateCalculator.viewPagerDayCurrentItem.value = days[viewHolder.adapterPosition].date
         }
