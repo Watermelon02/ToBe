@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <watermelon.tobe.view.CollapseDayItem xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="40dp"
         android:layout_height="20dp"
         xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -11,5 +11,5 @@
             android:layout_height="20dp"
             android:fontFamily="@font/store_my_stamp_number" />
 
-    </FrameLayout>
+    </watermelon.tobe.view.CollapseDayItem>
 </layout>

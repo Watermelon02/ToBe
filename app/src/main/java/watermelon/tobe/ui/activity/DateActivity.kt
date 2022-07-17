@@ -29,17 +29,23 @@ class DateActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = DateViewModel()
-        val dateBinding = DataBindingUtil.setContentView<ActivityDateBinding>(
+        val binding = DataBindingUtil.setContentView<ActivityDateBinding>(
             this,
             R.layout.activity_date
         )
-        dateBinding.apply {
+        binding.apply {
             activityDateViewPagerMonth.adapter = MonthAdapter(this@DateActivity, TOTAL_MONTH,viewModel)
             //旋转180度，让其向左排列月份；同时在MonthFragment中让里面的内容翻转180度,以正常显示内容
             activityDateViewPagerMonth.rotationY = 180f
             activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
             activityDateViewPagerDay.adapter =
                 DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0))
+            activityDateCollapseLayout.collapseListener = {
+                viewModel.collapsedState.value = DateViewModel.CollapsedState.COLLAPSED
+            }
+            activityDateCollapseLayout.expandListener = {
+                viewModel.collapsedState.value = DateViewModel.CollapsedState.EXPAND
+            }
             //对当前vp应该显示日期的监听，当接收到数据时，切换到对应item
             safeLaunch {
                 DateCalculator.viewPagerDayCurrentItem.collect {

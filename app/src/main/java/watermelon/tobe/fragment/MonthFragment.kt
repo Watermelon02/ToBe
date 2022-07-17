@@ -23,7 +23,7 @@ import java.util.*
  * email : 1446157077@qq.com
  * date : 2022/7/14 13:33
  */
-class MonthFragment(val time: String, val viewModel: DateViewModel) : Fragment() {
+class MonthFragment(private val time: String, private val viewModel: DateViewModel) : Fragment() {
     private val year = time.split("-")[0].toInt()
     private val month = time.split("-")[1].toInt()
     private lateinit var monthBinding: FragmentMonthBinding
@@ -37,7 +37,7 @@ class MonthFragment(val time: String, val viewModel: DateViewModel) : Fragment()
         monthBinding.apply {
             moduleDateFragmentMonthRecyclerviewDay.layoutManager =
                 StickGridLayoutManager(context, 7)
-            val test = DateCalculator.getDays(calculateDiffMonth())
+
             moduleDateFragmentMonthRecyclerviewDay.adapter =
                 DaysAdapter(listOf())
             //让里面的内容翻转180度,以避免在DateActivity中的翻转让内部内容变成镜像
@@ -52,11 +52,12 @@ class MonthFragment(val time: String, val viewModel: DateViewModel) : Fragment()
                 }
             }
         }
+        safeLaunch {
+            viewModel.collapsedState.collectLatest {
+                monthBinding.moduleDateFragmentMonthRecyclerviewDay.collapsedState = it
+            }
+        }
         return monthBinding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     @SuppressLint("SimpleDateFormat")

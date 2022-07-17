@@ -5,7 +5,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.view.updateLayoutParams
+import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
 
 /**
@@ -20,6 +22,12 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
     private var lastY = 0f
     private var lastX = 0f
     private var totalDy = 0f
+    var isPulling = false
+    var collapsedState = DateViewModel.CollapsedState.COLLAPSED
+    var collapsedHeight = 0
+    var expandedHeight = 0
+    var collapseListener: (() -> Unit)? = null
+    var expandListener: (() -> Unit)? = null
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         return when (ev?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -42,7 +50,9 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     false
                 }
             }
-            MotionEvent.ACTION_UP -> return false
+            MotionEvent.ACTION_UP -> {
+                return false
+            }
             else -> return true
         }
     }
@@ -59,7 +69,8 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                 val dy = event.rawY - lastY
                 val dx = event.rawX - lastX
                 val childHeight1 = getChildAt(4).height
-                if ((dy > 0 && childHeight1+dy <= maxDy) || (dy < 0 && childHeight1 >= minDy)) {
+                if ((dy > 0 && childHeight1 + dy <= maxDy) || (dy < 0 && childHeight1 >= minDy)) {
+                    isPulling = true
                     getChildAt(4).updateLayoutParams<LayoutParams> {
                         this.height = childHeight1 + dy.toInt()
                         requestLayout()
@@ -72,22 +83,32 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
             else -> {
                 val childHeight1 = getChildAt(4).height
 
-                if (totalDy>(maxDy-minDy)*0.5){
-                    val expandAnimator = ValueAnimator.ofInt(childHeight1,maxDy.toInt())
+                if (totalDy > (maxDy - minDy) * 0.5) {
+                    val expandAnimator = ValueAnimator.ofInt(childHeight1, maxDy.toInt())
                     expandAnimator.addUpdateListener {
                         getChildAt(4).updateLayoutParams<LayoutParams> {
                             this.height = it.animatedValue as Int
                             requestLayout()
                         }
                     }
+                    expandAnimator.doOnEnd {
+                        collapsedState = DateViewModel.CollapsedState.EXPAND
+                        expandListener?.invoke()
+                        isPulling = false
+                    }
                     expandAnimator.start()
-                }else {
-                    val collapseAnimator = ValueAnimator.ofInt(childHeight1,minDy.toInt())
+                } else {
+                    val collapseAnimator = ValueAnimator.ofInt(childHeight1, minDy.toInt())
                     collapseAnimator.addUpdateListener {
                         getChildAt(4).updateLayoutParams<LayoutParams> {
                             this.height = it.animatedValue as Int
                             requestLayout()
                         }
+                    }
+                    collapseAnimator.doOnEnd {
+                        collapsedState = DateViewModel.CollapsedState.COLLAPSED
+                        collapseListener?.invoke()
+                        isPulling = false
                     }
                     collapseAnimator.start()
                 }

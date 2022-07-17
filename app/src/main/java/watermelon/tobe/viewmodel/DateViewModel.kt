@@ -3,6 +3,7 @@ package watermelon.tobe.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
@@ -16,7 +17,8 @@ import watermelon.tobe.repo.repository.DateRepository
  */
 class DateViewModel : ViewModel() {
 
-    var collapsedState = CollapsedState.COLLAPSED
+    var collapsedState = MutableStateFlow(CollapsedState.COLLAPSED)
+
     suspend fun queryHoliday(date: String) = DateRepository.queryHoliday(date).catch {
         Log.d("testTag", "(DateViewModel.kt:22) -> ${it.message}")
     }.stateIn(
