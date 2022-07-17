@@ -3,6 +3,7 @@ package watermelon.tobe.view
 import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
@@ -17,24 +18,29 @@ import kotlin.math.absoluteValue
  * date : 2022/7/14 20:14
  */
 class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
-    private var maxDy = 0f
-    private var minDy = 0f
     private var lastY = 0f
     private var lastX = 0f
     private var totalDy = 0f
     var isScrolling = false
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
+    private var screenHeight = 0
     var collapsedHeight = 0
     var expandedHeight = 0
     var collapseListener: (() -> Unit)? = null
     var expandListener: (() -> Unit)? = null
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        if (collapsedHeight == 0 && expandedHeight == 0){
+            screenHeight = measuredHeight
+            collapsedHeight = (screenHeight *0.1f).toInt()
+            expandedHeight = (screenHeight* 0.9f).toInt()
+        }
+    }
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         return when (ev?.action) {
             MotionEvent.ACTION_DOWN -> {
                 lastY = ev.rawY
                 lastX = ev.rawX
-                maxDy = height * 0.8f
-                minDy = height * 0.1f
                 return false
             }
             MotionEvent.ACTION_MOVE -> {
@@ -68,10 +74,10 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
             MotionEvent.ACTION_MOVE -> {
                 val dy = event.rawY - lastY
                 val dx = event.rawX - lastX
-                val childHeight1 = getChildAt(4).height
-                if ((dy > 0 && childHeight1 + dy <= maxDy) || (dy < 0 && childHeight1 >= minDy)) {
+                val childHeight1 = getChildAt(5).height
+                if ((dy > 0 && childHeight1 + dy <= expandedHeight) || (dy < 0 && childHeight1 >= collapsedHeight)) {
                     isScrolling = true
-                    getChildAt(4).updateLayoutParams<LayoutParams> {
+                    getChildAt(5).updateLayoutParams<LayoutParams> {
                         this.height = childHeight1 + dy.toInt()
                         requestLayout()
                     }
@@ -81,12 +87,11 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                 lastX = event.rawX
             }
             else -> {
-                val childHeight1 = getChildAt(4).height
-
-                if (totalDy > (maxDy - minDy) * 0.5) {
-                    val expandAnimator = ValueAnimator.ofInt(childHeight1, maxDy.toInt())
+                val childHeight1 = getChildAt(5).height
+                if (totalDy > (expandedHeight-collapsedHeight) * 0.5) {
+                    val expandAnimator = ValueAnimator.ofInt(childHeight1, expandedHeight)
                     expandAnimator.addUpdateListener {
-                        getChildAt(4).updateLayoutParams<LayoutParams> {
+                        getChildAt(5).updateLayoutParams<LayoutParams> {
                             this.height = it.animatedValue as Int
                             requestLayout()
                         }
@@ -98,9 +103,9 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     }
                     expandAnimator.start()
                 } else {
-                    val collapseAnimator = ValueAnimator.ofInt(childHeight1, minDy.toInt())
+                    val collapseAnimator = ValueAnimator.ofInt(childHeight1, collapsedHeight)
                     collapseAnimator.addUpdateListener {
-                        getChildAt(4).updateLayoutParams<LayoutParams> {
+                        getChildAt(5).updateLayoutParams<LayoutParams> {
                             this.height = it.animatedValue as Int
                             requestLayout()
                         }
@@ -117,6 +122,5 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
 
         return super.onTouchEvent(event)
     }
-
 
 }

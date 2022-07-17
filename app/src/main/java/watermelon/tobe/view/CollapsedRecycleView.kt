@@ -22,6 +22,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
     private var expandedHeight = 0
     private var childRect: Rect = Rect()
 
+
     //上一个被选中的child
     private var lastChosenChild = -1
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
@@ -38,42 +39,21 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
         }
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
-        if (collapsedState == DateViewModel.CollapsedState.COLLAPSED) {
-            if (firstInit) {
-                collapsedHeight = MeasureSpec.getSize(heightSpec)
-                getCollapseLayout(parent).collapsedHeight = collapsedHeight
-                firstInit = false
-            }
-            for (i in 0..childCount) {
-                val child = getChildAt(i)
-                if (child != null) {
-                    getChildAt(i).updateLayoutParams<MarginLayoutParams> {
-                        this.bottomMargin =
-                            ((MeasureSpec.getSize(heightSpec) - collapsedHeight) * 0.1).toInt()
-                        this.topMargin =
-                            ((MeasureSpec.getSize(heightSpec) - collapsedHeight) * 0.1).toInt()
-                    }
-                    (child as CollapseDayItem).collapsedState = collapsedState
-                }
+        val collapseLayout = getCollapseLayout(parent)
+        if (firstInit) {
+            collapsedHeight = collapseLayout.collapsedHeight
+            expandedHeight = collapseLayout.expandedHeight
+            firstInit = false
+        }
 
-            }
-        } else {
-            if (firstInit) {
-                expandedHeight = MeasureSpec.getSize(heightSpec)
-                getCollapseLayout(parent).expandedHeight = expandedHeight
-                firstInit = false
-            }
-            for (i in 0..childCount) {
-                val child = getChildAt(i)
-                if (child != null) {
-                    child.updateLayoutParams<MarginLayoutParams> {
-                        this.bottomMargin =
-                            ((MeasureSpec.getSize(heightSpec) - collapsedHeight) * 0.1).toInt()
-                        this.topMargin =
-                            ((MeasureSpec.getSize(heightSpec) - collapsedHeight) * 0.1).toInt()
-                    }
-                    (child as CollapseDayItem).collapsedState = collapsedState
+        for (i in 0..childCount) {
+            val child = getChildAt(i)
+            if (child != null) {
+                getChildAt(i).updateLayoutParams<MarginLayoutParams> {
+                    this.bottomMargin =
+                        ((MeasureSpec.getSize(heightSpec) - collapsedHeight) * 0.1).toInt()
                 }
+                (child as CollapseDayItem).collapsedState = collapsedState
             }
         }
         super.onMeasure(widthSpec, heightSpec)
@@ -109,7 +89,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
         lastChosenChild = -1
     }
 
-    fun getCollapseLayout(parent: ViewParent): CollapseLayout {
+    private fun getCollapseLayout(parent: ViewParent): CollapseLayout {
         return if (parent is CollapseLayout) parent else getCollapseLayout(parent.parent)
     }
 }

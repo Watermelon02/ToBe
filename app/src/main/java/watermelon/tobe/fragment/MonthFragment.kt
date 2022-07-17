@@ -43,7 +43,8 @@ class MonthFragment(private val time: String, private val viewModel: DateViewMod
             //让里面的内容翻转180度,以避免在DateActivity中的翻转让内部内容变成镜像
             root.rotationY = 180f
         }
-        safeLaunch {
+        Log.d("testTag", "(DateActivity.kt:58) -> 2:${month}")
+        viewLifecycleOwner.safeLaunch {
             viewModel.queryMonth(time).collectLatest {
                 it?.let {
                     (monthBinding.moduleDateFragmentMonthRecyclerviewDay.adapter as DaysAdapter).days =
@@ -52,23 +53,11 @@ class MonthFragment(private val time: String, private val viewModel: DateViewMod
                 }
             }
         }
-        safeLaunch {
+        viewLifecycleOwner.safeLaunch {
             viewModel.collapsedState.collectLatest {
                 monthBinding.moduleDateFragmentMonthRecyclerviewDay.collapsedState = it
             }
         }
         return monthBinding.root
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    private fun calculateDiffMonth(): Int {
-        val currentYear = DateCalculator.calendar2[Calendar.YEAR]
-        //因为calendar[Calendar.Month]获取到的月份为当前月份-1,所以这里也-1
-        val currentMonth = DateCalculator.calendar2[Calendar.MONTH]
-        return if (currentMonth > month) {
-            -((currentMonth - month) + 12 * (currentYear - year))
-        } else {
-            -((currentMonth + 12 - month) + 12 * (currentYear - year - 1))
-        }
     }
 }

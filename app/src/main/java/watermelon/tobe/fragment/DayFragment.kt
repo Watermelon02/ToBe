@@ -39,7 +39,7 @@ class DayFragment(val time: String, val viewModel: DateViewModel) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        safeLaunch {
+        viewLifecycleOwner.safeLaunch {
             //获取日期对应的数据
             viewModel.queryHoliday(time).collectLatest {
                 binding.fragmentDayLunarCalendar.text = it?.lunarCalendar

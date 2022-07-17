@@ -3,7 +3,6 @@ package watermelon.tobe.view
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
-import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -12,8 +11,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.animation.doOnEnd
 import androidx.core.view.updateLayoutParams
-import androidx.palette.graphics.Palette
-import watermelon.tobe.R
 import watermelon.tobe.viewmodel.DateViewModel
 
 /**
@@ -35,20 +32,16 @@ class CollapseDayItem(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     //被选中时的背景圆圈半径
     private var backGroundRadius = 0f
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
-    var margin = 0
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val collapseLayout = getCollapseLayout(parent)
         if (!collapseLayout.isScrolling && collapseLayout.collapsedState == DateViewModel.CollapsedState.EXPAND) {
             updateLayoutParams<MarginLayoutParams> {
-                margin = collapseLayout.expandedHeight - collapseLayout.collapsedHeight
                 this.bottomMargin =
-                    (margin * 0.1).toInt()
-                this.topMargin =
-                    (margin * 0.1).toInt()
+                    ((collapseLayout.expandedHeight - collapseLayout.collapsedHeight) * 0.1).toInt()
             }
         }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
@@ -68,6 +61,8 @@ class CollapseDayItem(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         animator?.addUpdateListener {
             val value = it.animatedValue as Float
             backGroundRadius = value * height / 2
+            Log.d("testTag", "(CollapseDayItem.kt:63) -> ${backGroundRadius}")
+
             invalidate()
         }
         animator?.start()

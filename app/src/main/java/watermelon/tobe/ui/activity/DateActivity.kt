@@ -19,11 +19,11 @@ import watermelon.tobe.util.local.DateCalculator.lastDay
 import watermelon.tobe.util.local.DateCalculator.lastMonth
 import watermelon.tobe.util.local.DateCalculator.lastYear
 import watermelon.tobe.viewmodel.DateViewModel
+import java.util.*
 
 class DateActivity : BaseActivity() {
-    lateinit var viewModel: DateViewModel
-    var isScrolling = false
-
+    private lateinit var viewModel: DateViewModel
+    private var isScrolling = false
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,12 +34,13 @@ class DateActivity : BaseActivity() {
             R.layout.activity_date
         )
         binding.apply {
-            activityDateViewPagerMonth.adapter = MonthAdapter(this@DateActivity, TOTAL_MONTH,viewModel)
+            activityDateViewPagerMonth.adapter =
+                MonthAdapter(this@DateActivity, TOTAL_MONTH, viewModel)
             //旋转180度，让其向左排列月份；同时在MonthFragment中让里面的内容翻转180度,以正常显示内容
             activityDateViewPagerMonth.rotationY = 180f
             activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
             activityDateViewPagerDay.adapter =
-                DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0))
+                DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0), viewModel)
             activityDateCollapseLayout.collapseListener = {
                 viewModel.collapsedState.value = DateViewModel.CollapsedState.COLLAPSED
             }
@@ -54,8 +55,9 @@ class DateActivity : BaseActivity() {
                     val day = it.split("-")[2].toInt()
                     if (year != lastYear || month != lastMonth) {
                         //当切换了月份后点击日期
-                        val diff = DateCalculator.calculateDiffMonth(year, month)
-                        DateCalculator.getMonthDays(diff)
+                        viewModel.queryMonth("${year}-${month}").value?.let {
+                            DateCalculator.days.emit(it)
+                        }
                     }
                     //day-1才是对应的index
                     activityDateViewPagerDay.currentItem = day - 1
@@ -84,7 +86,7 @@ class DateActivity : BaseActivity() {
             //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
             activityDateViewPagerMonth.registerOnPageChangeCallback(object :
                 ViewPager2.OnPageChangeCallback() {
-                private var lastPosition = TOTAL_MONTH/2
+                private var lastPosition = TOTAL_MONTH / 2
                 override fun onPageScrolled(
                     position: Int,
                     positionOffset: Float,
@@ -104,10 +106,34 @@ class DateActivity : BaseActivity() {
                 }
 
                 override fun onPageSelected(position: Int) {
+                    //改变年份
+                    val calendar = Calendar.getInstance()
+                    calendar.add(Calendar.MONTH, TOTAL_MONTH / 2 - position)
+                    val yearTextWidth = binding.activityDateNumberYear.width
+                    if (calendar[Calendar.YEAR] < viewModel.currentYear) {
+                        binding.activityDateNumberYear.animate().x(yearTextWidth / 2f).alpha(0f)
+                            .withEndAction {
+                                binding.activityDateNumberYear.text =
+                                    calendar[Calendar.YEAR].toString()
+                                activityDateNumberYear.x = -yearTextWidth / 2f
+                                activityDateNumberYear.animate().x(0f).alpha(1f)
+                            }
+                    } else if (calendar[Calendar.YEAR] > viewModel.currentYear) {
+                        binding.activityDateNumberYear.animate().x(-yearTextWidth / 2f).alpha(0f)
+                            .withEndAction {
+                                binding.activityDateNumberYear.text =
+                                    calendar[Calendar.YEAR].toString()
+                                activityDateNumberYear.x = yearTextWidth / 2f
+                                activityDateNumberYear.animate().x(0f).alpha(1f)
+                            }
+                    }
+                    viewModel.currentYear = calendar[Calendar.YEAR]
+                    viewModel.currentMonth = calendar[Calendar.MONTH]
+                    //改变月份
                     if (position > lastPosition) {
-                        activityDateNumberMonth.stop(1)
+                        activityDateNumberMonth.changePosition(1)
                     } else {
-                        activityDateNumberMonth.stop(0)
+                        activityDateNumberMonth.changePosition(0)
                     }
                     lastPosition = position
                 }

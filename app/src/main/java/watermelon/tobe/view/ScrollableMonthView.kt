@@ -16,7 +16,7 @@ import java.util.*
  * email : 1446157077@qq.com
  * date : 2022/7/15 09:14
  */
-class ScrollableNumberView(context: Context, attrs: AttributeSet?) :
+class ScrollableMonthView(context: Context, attrs: AttributeSet?) :
     androidx.appcompat.widget.AppCompatTextView(
         context, attrs
     ) {
@@ -74,7 +74,7 @@ class ScrollableNumberView(context: Context, attrs: AttributeSet?) :
         super.onDraw(canvas)
     }
 
-    fun stop(direction: Int) {
+    fun changePosition(direction: Int) {
             if (direction == 0) {
                 val tempX = monthList[1].x
                 val tempMonth = monthList[1].month

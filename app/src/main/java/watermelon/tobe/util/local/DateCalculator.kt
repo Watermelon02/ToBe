@@ -15,16 +15,15 @@ import java.util.*
 object DateCalculator {
     //MonthFragment上方vp会显示的月份数量
     const val TOTAL_MONTH = 25
-    val calendar1 = Calendar.getInstance()
     val calendar2 = Calendar.getInstance()
 
-    //当前选中要展示的日期
+    //被点击选中的日期
     var lastYear = calendar2[Calendar.YEAR]
-    var lastMonth = calendar2[Calendar.MONTH]+1
+    var lastMonth = calendar2[Calendar.MONTH] + 1
     var lastDay = calendar2[Calendar.DATE]
     val days = MutableStateFlow(listOf<Day>())
     val viewPagerDayCurrentItem =
-        MutableStateFlow("${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH]+1}-${calendar2[Calendar.DATE]}")
+        MutableStateFlow("${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH] + 1}-${calendar2[Calendar.DATE]}")
 
 
     //计算要查看的月份和当前选中月份的差值
@@ -42,16 +41,21 @@ object DateCalculator {
 
     /**@param diff 要计算的月份与当前月份的差
      * @return 获取到目标月份的日期格式字符串ArrayList*/
-    suspend fun getMonthDays(diff: Int) {
+    fun getMonthDays(month: String): ArrayList<Day> {
         val mDays = ArrayList<Day>()
-        calendar1.add(Calendar.MONTH, diff)
-        calendar1[Calendar.DATE] = 1 //把日期设置为当月第一天
-        calendar1.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
-        for (i in 1..calendar1[Calendar.DATE]) {
-            val date = "${calendar1[Calendar.YEAR]}-${calendar1[Calendar.MONTH]+1}-$i"
-            mDays.add(Day(date = date))
+        val calendar = Calendar.getInstance()
+        val year = month.split("-")[0].toInt()
+        val month = month.split("-")[1].toInt()
+        calendar[Calendar.YEAR] = year
+        calendar[Calendar.MONTH] = month - 1
+        calendar[Calendar.DATE] = 1 //把日期设置为当月第一天
+        calendar.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
+        for (i in 1..calendar[Calendar.DATE]) {
+            val date = "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] + 1}-$i"
+            calendar[Calendar.DATE] = i
+            mDays.add(Day(date = date, weekDay = calendar[Calendar.DAY_OF_WEEK]))
         }
-        days.emit(mDays)
+        return mDays
     }
 
     /**@param diff 要计算的月份与当前月份的差
@@ -63,7 +67,7 @@ object DateCalculator {
         calendar2.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
 
         for (i in 1..calendar2[Calendar.DATE]) {
-            val date = "${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH]+1}-$i"
+            val date = "${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH] + 1}-$i"
             mDays.add(Day(date = date))
         }
         return mDays
@@ -75,7 +79,7 @@ object DateCalculator {
         var dateForQuery = ""
         for (i in 0..2) {
             if (i == 1) {//将 x 月 改为 0x月 以符合格式
-                val month = list[1].toInt() + 1
+                val month = list[1].toInt()
                 if (month < 10) list[1] = "0$month" else month
             }
             if (i == 2) {
@@ -90,10 +94,9 @@ object DateCalculator {
     /**将yyyy-M-d的日期格式化为yyyy-MM-dd格式以进行room的query请求*/
     fun formatDateForLocalQueryHoliday(date: String): String {
         val list = date.split("-").toMutableList()
-        var dateForQuery = ""
         val year = list[0]
-        val month = list[1].toInt() + 1
-        list[1] = if (month < 10)  "0$month" else month.toString()
+        val month = list[1].toInt()
+        list[1] = if (month < 10) "0$month" else month.toString()
         val day = list[2].toInt()
         list[2] = if (day < 10) "0$day" else day.toString()
         return "$year-${list[1]}-${list[2]}"
@@ -105,7 +108,7 @@ object DateCalculator {
         var monthForQuery = ""
         for (i in 0..1) {
             if (i == 1) {//将 x 月 改为 0x月 以符合格式
-                val month = list[1].toInt() + 1
+                val month = list[1].toInt()
                 if (month < 10) {
                     list[1] = "0$month"
                 } else {
@@ -121,8 +124,9 @@ object DateCalculator {
     fun formatDateForLocalQueryMonth(month: String): String {
         val list = month.split("-").toMutableList()
         val year = list[0]
-        val month = list[1].toInt()+1
-        list[1] = if (month < 10)  "0$month" else month.toString()
+        val month = list[1].toInt()
+        list[1] = if (month < 10) "0$month" else month.toString()
         return "$year-${list[1]}"
     }
+
 }

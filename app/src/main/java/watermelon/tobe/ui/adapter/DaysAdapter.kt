@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.databinding.ItemDayBinding
 import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.util.local.DateCalculator
-import watermelon.tobe.view.CollapseDayItem
-import watermelon.tobe.viewmodel.DateViewModel
 
 /**
  * description ： DateActivity中的日历
@@ -21,18 +19,28 @@ class DaysAdapter(var days: List<Day>) :
     open class ViewHolder(val dateBinding: ItemDayBinding) :
         RecyclerView.ViewHolder(dateBinding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val viewHolder = ViewHolder(ItemDayBinding.inflate(LayoutInflater.from(parent.context)))
-        viewHolder.dateBinding.root.setOnClickListener {
-            //更改flow的值,使DateActivity下方的日期详情vp跳转
-            DateCalculator.viewPagerDayCurrentItem.value = days[viewHolder.adapterPosition].date
-        }
-        return viewHolder
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)= ViewHolder(ItemDayBinding.inflate(LayoutInflater.from(parent.context)))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        //设置Item的Text为日期
-        holder.dateBinding.moduleDateActivityDateItemDay.text = days[position].date.split("-")[2]
+        if (days[position].date != ""){
+            //判断当前day是否属于本月，不属于则将日期颜色变灰
+            val isCurrentMonthDay = days[position].date.split("-")[1] == days.last().date.split("-")[1]
+            //设置Item的Text为日期
+            if (isCurrentMonthDay) {
+                //
+                holder.dateBinding.moduleDateActivityDateItemDay.text =
+                    days[position].date.split("-")[2]
+                holder.dateBinding.root.setOnClickListener {
+                    Log.d("testTag", "(DaysAdapter.kt:32) -> ${days[holder.adapterPosition].date}")
+                    //更改flow的值,使DateActivity下方的日期详情vp跳转,本来应该在onCreateViewHolder里面绑定，防止重复设置点击监听.但是会出现adapterPosition为
+                    DateCalculator.viewPagerDayCurrentItem.value = days[holder.adapterPosition].date
+                }
+            } else {
+                holder.dateBinding.moduleDateActivityDateItemDay.text =
+                    days[position].date.split("-")[2]
+                holder.dateBinding.moduleDateActivityDateItemDay.alpha = 0.2f
+            }
+        }
     }
 
     override fun getItemCount(): Int = days.size

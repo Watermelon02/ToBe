@@ -24,6 +24,6 @@ class MonthAdapter(fragmentActivity: FragmentActivity, private val diffMonth: In
         val calendar = Calendar.getInstance().apply {
             add(Calendar.MONTH,-position+diffMonth/2)
         }
-        return MonthFragment("${calendar[Calendar.YEAR]}-"+"${calendar[Calendar.MONTH]}",viewModel)
+        return MonthFragment("${calendar[Calendar.YEAR]}-"+"${calendar[Calendar.MONTH]+1}",viewModel)
     }
 }
