@@ -101,7 +101,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     }
                     expandAnimator.doOnEnd {
                         collapsedState = DateViewModel.CollapsedState.EXPAND
-                        getCollapsedRecyclerView()?.collapsedState =  DateViewModel.CollapsedState.EXPAND
+                        getInnerViewPagerLayout()?.collapsedState =  DateViewModel.CollapsedState.EXPAND
                         expandListener?.invoke()
                         isScrolling = false
                     }
@@ -116,7 +116,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     }
                     collapseAnimator.doOnEnd {
                         collapsedState = DateViewModel.CollapsedState.COLLAPSED
-                        getCollapsedRecyclerView()?.collapsedState =  DateViewModel.CollapsedState.COLLAPSED
+                        getInnerViewPagerLayout()?.collapsedState =  DateViewModel.CollapsedState.COLLAPSED
                         collapseListener?.invoke()
                         isScrolling = false
                     }
@@ -128,12 +128,12 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
         return super.onTouchEvent(event)
     }
 
-    private fun getCollapsedRecyclerView(): CollapsedRecycleView? {
+    private fun getInnerViewPagerLayout(): InnerViewPagerLayout? {
         for (i in 0 until childCount) {
             val child = getChildAt(i)
             if (child is ViewPager2) {
                 val innerViewPagerLayout = (((((((child).getChildAt(0)) as ViewGroup).getChildAt(0)) as ViewGroup).getChildAt(0))as ViewGroup ).getChildAt(0)
-                return innerViewPagerLayout as CollapsedRecycleView
+                return innerViewPagerLayout as InnerViewPagerLayout?
             }
         }
         return null

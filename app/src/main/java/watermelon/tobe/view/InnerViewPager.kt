@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
 
@@ -39,15 +40,22 @@ class InnerViewPagerLayout(context: Context, attrs: AttributeSet?) : LinearLayou
                 val dy = ev.rawY - lastY
                 if (dx.absoluteValue > dy.absoluteValue) {
                     (getChildAt(0) as CollapsedRecycleView).layoutManager?.let {
-                        Log.d("testTag", "(InnerViewPager.kt:33) -> ${(it as GridLayoutManager).findFirstVisibleItemPosition()}.${dx}")
-                        if (((it as GridLayoutManager).findFirstVisibleItemPosition() == 0 && dx > 0) ||
-                            ((it as GridLayoutManager).findLastVisibleItemPosition() == 34 && dx < 0)||((it as GridLayoutManager).findLastVisibleItemPosition() == 41 && dx < 0)
-                        ) {
-                            Log.d("testTag", "(InnerViewPager.kt:33) -> 1")
-                            parent.requestDisallowInterceptTouchEvent(false)
-                        } else {
-                            Log.d("testTag", "(InnerViewPager.kt:36) -> 2")
-                            parent.requestDisallowInterceptTouchEvent(true)
+                        if (it is GridLayoutManager){
+                            if ((it.findFirstVisibleItemPosition() == 0 && dx > 0) ||
+                                (it.findLastVisibleItemPosition() == 34 && dx < 0)||(it.findLastVisibleItemPosition() == 41 && dx < 0)
+                            ) {
+                                parent.requestDisallowInterceptTouchEvent(false)
+                            } else {
+                                parent.requestDisallowInterceptTouchEvent(true)
+                            }
+                        }else if (it is LinearLayoutManager){
+                            if ((it.findFirstVisibleItemPosition() == 0 && dx > 0) ||
+                                (it.findLastVisibleItemPosition() == 34 && dx < 0)||(it.findLastVisibleItemPosition() == 41 && dx < 0)
+                            ) {
+                                parent.requestDisallowInterceptTouchEvent(false)
+                            } else {
+                                parent.requestDisallowInterceptTouchEvent(true)
+                            }
                         }
                     }
                 } else {

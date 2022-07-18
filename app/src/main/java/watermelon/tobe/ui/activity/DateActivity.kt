@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.widget.ViewPager2
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import watermelon.lightmusic.base.BaseActivity
 import watermelon.tobe.R
 import watermelon.tobe.databinding.ActivityDateBinding
@@ -52,7 +52,7 @@ class DateActivity : BaseActivity() {
             }
             safeLaunch {//初始化,让上方vp到中间当前月份
                 //初始化下方vp的数据
-                viewModel.emitDays("${viewModel.currentYear}-${viewModel.currentMonth + 1}")
+                viewModel.emitDays("${viewModel.currentYear}-${viewModel.currentMonth}")
             }
             //对当前vp应该显示日期的监听，当接收到数据时，切换到对应item
             safeLaunch {
@@ -64,16 +64,8 @@ class DateActivity : BaseActivity() {
                         //当切换了月份后点击日期,需要改变下方vp中的值
                         viewModel.emitDays("${currentYear}-${currentMonth}")
                     }
-                    if (!firstInit) {
-                        val calendar = Calendar.getInstance()
-                        calendar[Calendar.DATE] = 1
-                        //减去为填充满一周的上个月数据
-                        activityDateViewPagerDay.currentItem =
-                            currentDay - 1 - calendar[Calendar.DAY_OF_WEEK]
-                    } else {
-                        //day-1才是对应的index
-                        activityDateViewPagerDay.currentItem = currentDay - 1
-                    }
+                    //day-1才是对应的index
+                    activityDateViewPagerDay.currentItem = currentDay - 1
                     lastYear = currentYear
                     lastMonth = currentMonth
                     lastDay = currentDay
@@ -81,7 +73,7 @@ class DateActivity : BaseActivity() {
             }
             //对当前选中月份对应的日期List的监听，当值改变时，经过DiffUtil比对后对下方的Vp进行差分刷新
             safeLaunch {
-                viewModel.days.collect {
+                viewModel.dayFragmentDays.collectLatest {
                     if (it.size > 1) {//在初始化flow的时候会发送一个listOf("")，需要排除这种情况
                         val diffResult = DiffUtil.calculateDiff(
                             DayInfoAdapter.NoteDiffUtil(

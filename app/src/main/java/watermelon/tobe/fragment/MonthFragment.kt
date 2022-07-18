@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import watermelon.tobe.databinding.FragmentMonthBinding
 import watermelon.tobe.ui.adapter.DaysAdapter
 import watermelon.tobe.util.extension.safeLaunch
 import watermelon.tobe.view.StickGridLayoutManager
+import watermelon.tobe.view.WeeklyViewLayoutManager
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.MonthFragmentViewModel
 
@@ -36,32 +39,30 @@ class MonthFragment(
         binding =
             FragmentMonthBinding.inflate(LayoutInflater.from(context), null, false)
         binding.apply {
+            fragmentMonthRecyclerviewDay.recycledViewPool.setMaxRecycledViews(0,50)
             fragmentMonthRecyclerviewDay.layoutManager =
-                StickGridLayoutManager(context, 7)
+                WeeklyViewLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             fragmentMonthRecyclerviewDay.adapter =
                 DaysAdapter(listOf())
-            /*viewLifecycleOwner.safeLaunch {
+            viewLifecycleOwner.safeLaunch {
                 dateViewModel.collapsedState.collectLatest {
                     fragmentMonthRecyclerviewDay.collapsedState = it
                     if (it == DateViewModel.CollapsedState.COLLAPSED) {
-                        *//*fragmentMonthRecyclerviewDay.layoutManager =
-                                GridLayoutManager(context, 1).apply {
-                                    orientation = GridLayoutManager.HORIZONTAL
-                                }*//*
-                            (fragmentMonthRecyclerviewDay.layoutManager as GridLayoutManager).spanCount =
-                            1
-                        (fragmentMonthRecyclerviewDay.layoutManager as GridLayoutManager).orientation =
-                            GridLayoutManager.HORIZONTAL
+                        fragmentMonthRecyclerviewDay.layoutManager =
+                            WeeklyViewLayoutManager(
+                                requireContext(),
+                                LinearLayoutManager.HORIZONTAL,
+                                false
+                            )
                     } else if (it == DateViewModel.CollapsedState.EXPAND) {
-                        *//*fragmentMonthRecyclerviewDay.layoutManager =
-                            StickGridLayoutManager(context, 7)*//*
-                        (fragmentMonthRecyclerviewDay.layoutManager as GridLayoutManager).spanCount =
-                            7
-                        (fragmentMonthRecyclerviewDay.layoutManager as GridLayoutManager).orientation =
-                            GridLayoutManager.VERTICAL
+                        fragmentMonthRecyclerviewDay.layoutManager =
+                            StickGridLayoutManager(context, 7)
                     }
+                    fragmentMonthRecyclerviewDay.adapter =
+                        DaysAdapter(listOf())
+                    monthFragmentViewModel.emitDays(month)
                 }
-            }*/
+            }
             //让里面的内容翻转180度,以避免在DateActivity中的翻转让内部内容变成镜像
             root.rotationY = 180f
         }

@@ -1,15 +1,12 @@
 package watermelon.tobe.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.repo.repository.DateRepository
-import watermelon.tobe.util.local.DateCalculator
 import java.util.*
 
 /**
@@ -23,16 +20,16 @@ class DateViewModel : ViewModel() {
     var currentMonth = Calendar.getInstance()[Calendar.MONTH] + 1
     var collapsedState = MutableStateFlow(CollapsedState.HALF_EXPAND)
 
-    //下方vp中存储的day
-    val days = MutableStateFlow(listOf<Day>())
+    //上方vp中存储的day
+    val dayFragmentDays = MutableStateFlow(listOf<Day>())
 
     fun emitDays(month: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            days.emit(DateRepository.queryMonth(month))
+            dayFragmentDays.emit(DateRepository.queryMonth(month))
         }
     }
 
-    fun emitCollapsedState(state: CollapsedState){
+    fun emitCollapsedState(state: CollapsedState) {
         viewModelScope.launch {
             collapsedState.emit(state)
         }

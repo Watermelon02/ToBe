@@ -2,7 +2,6 @@ package watermelon.tobe.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +34,7 @@ class DayFragment(val time: String, val viewModel: DateViewModel) : Fragment() {
         //去除yyyy,取MM-dd
         binding.fragmentDayTitle.text = "${month}-${day}"
         viewLifecycleOwner.safeLaunch {
-            viewModel.days.collectLatest {
+            viewModel.dayFragmentDays.collectLatest {
                 if (it.isNotEmpty()){
                     var monthBeginning = 0
                     for (i in it.indices){
