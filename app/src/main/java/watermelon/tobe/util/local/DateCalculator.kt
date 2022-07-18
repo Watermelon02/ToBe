@@ -14,30 +14,15 @@ import java.util.*
  */
 object DateCalculator {
     //MonthFragment上方vp会显示的月份数量
-    const val TOTAL_MONTH = 25
+    const val TOTAL_MONTH = 7
     val calendar2 = Calendar.getInstance()
 
     //被点击选中的日期
     var lastYear = calendar2[Calendar.YEAR]
     var lastMonth = calendar2[Calendar.MONTH] + 1
     var lastDay = calendar2[Calendar.DATE]
-    val days = MutableStateFlow(listOf<Day>())
-    val viewPagerDayCurrentItem =
+    val currentDate =
         MutableStateFlow("${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH] + 1}-${calendar2[Calendar.DATE]}")
-
-
-    //计算要查看的月份和当前选中月份的差值
-    @SuppressLint("SimpleDateFormat")
-    fun calculateDiffMonth(
-        year: Int,
-        month: Int
-    ): Int {
-        return if (lastMonth > month) {
-            -((lastMonth - month) + 12 * (lastYear - year))
-        } else {
-            -((lastMonth + 12 - month) + 12 * (lastYear - year - 1))
-        }
-    }
 
     /**@param diff 要计算的月份与当前月份的差
      * @return 获取到目标月份的日期格式字符串ArrayList*/

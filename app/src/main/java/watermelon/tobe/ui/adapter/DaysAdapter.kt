@@ -45,7 +45,7 @@ class DaysAdapter(var days: List<Day>) :
                 holder.dateBinding.root.setOnClickListener {
                     Log.d("testTag", "(DaysAdapter.kt:32) -> ${days[holder.adapterPosition].date}")
                     //更改flow的值,使DateActivity下方的日期详情vp跳转,本来应该在onCreateViewHolder里面绑定，防止重复设置点击监听.但是会出现adapterPosition为
-                    DateCalculator.viewPagerDayCurrentItem.value = days[holder.adapterPosition].date
+                    DateCalculator.currentDate.value = days[holder.adapterPosition].date
                 }
             } else {
                 holder.dateBinding.activityDateItemDayDate.alpha = 0.2f

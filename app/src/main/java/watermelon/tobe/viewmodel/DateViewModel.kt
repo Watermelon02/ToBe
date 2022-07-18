@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.repo.repository.DateRepository
@@ -21,6 +22,10 @@ class DateViewModel : ViewModel() {
     var currentYear = Calendar.getInstance()[Calendar.YEAR]
     var currentMonth = Calendar.getInstance()[Calendar.MONTH] + 1
     var collapsedState = MutableStateFlow(CollapsedState.COLLAPSED)
+
+    //下方vp中存储的day
+    val days = MutableStateFlow(listOf<Day>())
+
 
     suspend fun queryHoliday(date: String) = DateRepository.queryHolidayForFlow(date).catch {
         Log.d("testTag", "(DateViewModel.kt:26) -> ${it.message}")
@@ -58,12 +63,18 @@ class DateViewModel : ViewModel() {
             for (i in calendar[Calendar.DATE] - dayList[0].weekDay + 1..calendar[Calendar.DATE]) {
                 val day =
                     DateRepository.queryHoliday(
-                        "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] +1}-$i"
+                        "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] + 1}-$i"
                     )
                 list.add(day)
             }
             list.addAll(dayList.toTypedArray())
             list.toList()
+        }
+    }
+
+    fun emitDays(month: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            days.emit(DateRepository.queryMonth(month))
         }
     }
 

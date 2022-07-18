@@ -72,12 +72,37 @@ object DateRepository {
         }
     }
 
+    suspend fun queryMonth(month: String): List<Day> {
+        val monthForLocalQuery = DateCalculator.formatDateForLocalQueryMonth(month)
+        val local = DayDatabase.getInstance().getDayDao().queryDays(monthForLocalQuery)
+        //大于7是因为后一个月会获取前一个月的倒数几天以补满一周，所以local.size不为空，只会发送倒数几天,设置为7则会重新进行网络请求
+        return if (local.size > 7) {
+            local
+        } else {
+            val monthForQuery = DateCalculator.formatDateForQueryMonth(month)
+            return try {//尝试进行网络请求
+                val remote = if (month.split("-")[0].toInt() >= 2023) {
+                    HolidayService.INSTANCE.queryMonth(month = monthForQuery, ignoreHoliday = true)
+                } else HolidayService.INSTANCE.queryMonth(monthForQuery, ignoreHoliday = false)
+                if (remote.code == 1) {
+                    for (i in 0 until remote.data.size) {
+                        DayDatabase.getInstance().getDayDao().insert(remote.data[i])
+                    }
+                    remote.data
+                } else DateCalculator.getMonthDays(month)
+            } catch (e: Exception) {//网络请求失败，生成本地数据
+                e.printStackTrace()
+                DateCalculator.getMonthDays(month)
+            }
+        }
+    }
+
     suspend fun queryMonthForFlow(month: String) = flow {
         val monthForLocalQuery = DateCalculator.formatDateForLocalQueryMonth(month)
         val local = DayDatabase.getInstance().getDayDao().queryDays(monthForLocalQuery)
         //大于7是因为后一个月会获取前一个月的倒数几天以补满一周，所以local.size不为空，只会发送倒数几天,设置为7则会重新进行网络请求
-        if (local.size>7) emit(local)
-        if (local.size<=7) {
+        if (local.size > 7) emit(local)
+        if (local.size <= 7) {
             val monthForQuery = DateCalculator.formatDateForQueryMonth(month)
             try {//尝试进行网络请求
                 val remote = if (month.split("-")[0].toInt() >= 2023) {
@@ -88,7 +113,7 @@ object DateRepository {
                     for (i in 0 until remote.data.size) {
                         DayDatabase.getInstance().getDayDao().insert(remote.data[i])
                     }
-                }else emit(DateCalculator.getMonthDays(month))
+                } else emit(DateCalculator.getMonthDays(month))
             } catch (e: Exception) {//网络请求失败，生成本地数据
                 e.printStackTrace()
                 emit(DateCalculator.getMonthDays(month))
