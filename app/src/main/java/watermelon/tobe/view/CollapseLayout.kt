@@ -14,7 +14,7 @@ import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
 
 /**
- * description ： TODO:类的作用
+ * description ： 可以展开折叠的布局，用于产生折叠和展开的事件，并通过接口向ViewModel分发，通过遍历向下分发来完成切换周月视图的功能
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/14 20:14

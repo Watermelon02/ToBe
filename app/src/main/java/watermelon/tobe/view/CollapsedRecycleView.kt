@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.viewmodel.DateViewModel
 
 /**
- * description ： TODO:类的作用
+ * description ： 可以折叠展开的Rv,用于切换月视图和周视图，会向下的CollapseDayItem通知折叠状态的改变
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/14 21:25

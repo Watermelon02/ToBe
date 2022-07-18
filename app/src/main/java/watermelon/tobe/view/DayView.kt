@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.core.animation.doOnEnd
 
 /**
- * description ： TODO:类的作用
+ * description ： 日期View，有被选中和被取消选中的动画
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/18 10:21

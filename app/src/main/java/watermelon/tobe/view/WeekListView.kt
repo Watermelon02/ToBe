@@ -10,7 +10,7 @@ import androidx.core.view.marginLeft
 import androidx.core.view.marginStart
 
 /**
- * description ： TODO:类的作用
+ * description ： 显示星期几的view
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/17 12:26

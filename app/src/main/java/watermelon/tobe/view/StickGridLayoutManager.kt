@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * description ： 重写GridLayoutManager，以禁止滑动功能
+ * description ： 重写GridLayoutManager，以禁止内部滑动功能
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/14 20:55

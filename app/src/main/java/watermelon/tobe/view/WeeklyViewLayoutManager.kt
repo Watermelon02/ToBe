@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * description ： 周视图LayoutManger，用于让
+ * description ： 周视图LayoutManger，用于刚好展示一周的数据
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/18 12:16
@@ -28,9 +28,11 @@ class WeeklyViewLayoutManager(
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         super.onLayoutChildren(recycler, state)
         if (state.itemCount>0){
+            //回收复用
             detachAndScrapAttachedViews(recycler)
             //随便获取一个view,测量宽高
             val view = recycler.getViewForPosition(0)
+            //7天，所以除7
             val interval = width / 7
             val visibleCount = width / interval
             var offsetX = 0

@@ -1,6 +1,5 @@
 package watermelon.tobe.ui.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +25,6 @@ class DaysAdapter(var days: List<Day>) : RecyclerView.Adapter<DaysAdapter.ViewHo
             //判断当前day是否属于本月，不属于则将日期颜色变灰
             val isCurrentMonthDay =
                 days[position].date.split("-")[1] == days[10].date.split("-")[1]
-            Log.d("testTag", "(DaysAdapter.kt:48) -> ${days[position].date},${isCurrentMonthDay}")
             //设置Item的Text为日期
             holder.dateBinding.activityDateItemDayDate.text = days[position].date.split("-")[2]
             if (days[position].type == 2) {//为节假日

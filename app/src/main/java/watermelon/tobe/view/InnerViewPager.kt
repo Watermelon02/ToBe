@@ -12,7 +12,7 @@ import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
 
 /**
- * description : 为了解决ViewPager2内部嵌套的ViewPager的滑动冲突的layout
+ * description : 为了解决ViewPager2内部嵌套的ViewPager类似滑动冲突的layout
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/6/23 15:07
