@@ -3,7 +3,6 @@ package watermelon.tobe.view
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewParent
 import androidx.core.view.updateLayoutParams
@@ -70,7 +69,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
                     if (childRect.contains(x.toInt(), y.toInt())) {//如果选中了该view
                         if (i != lastChosenChild) {
                             (child as CollapseDayItem).chooseAnimate()
-                            if (lastChosenChild != -1) (getChildAt(lastChosenChild) as CollapseDayItem).notChooseAnimate()
+                            if (lastChosenChild != -1) getChildAt(lastChosenChild)?.let { (it as CollapseDayItem).cancelAnimate() }
                             lastChosenChild = i
                         }
                     }
@@ -84,7 +83,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
         super.onDetachedFromWindow()
         //切换月份时将已经选中的日期的背景还原
         getChildAt(lastChosenChild)?.let {
-            (getChildAt(lastChosenChild) as CollapseDayItem).notChooseAnimate()
+            (getChildAt(lastChosenChild) as CollapseDayItem).cancelAnimate()
         }
         lastChosenChild = -1
     }
