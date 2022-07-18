@@ -14,7 +14,7 @@ import java.util.*
  */
 object DateCalculator {
     //MonthFragment上方vp会显示的月份数量
-    const val TOTAL_MONTH = 7
+    const val TOTAL_MONTH = 25
     val calendar2 = Calendar.getInstance()
 
     //被点击选中的日期
@@ -38,7 +38,7 @@ object DateCalculator {
         for (i in 1..calendar[Calendar.DATE]) {
             val date = "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] + 1}-$i"
             calendar[Calendar.DATE] = i
-            mDays.add(Day(date = date, weekDay = calendar[Calendar.DAY_OF_WEEK]))
+            mDays.add(Day(date = date, weekDay = calendar[Calendar.DAY_OF_WEEK]-1))
         }
         return mDays
     }

@@ -14,7 +14,7 @@ import watermelon.tobe.viewmodel.DateViewModel
  * email : 1446157077@qq.com
  * date : 2022/7/14 16:01
  */
-class DayInfoAdapter(val dateActivity: DateActivity, var days:List<Day>,val viewModel: DateViewModel) : FragmentStateAdapter(dateActivity) {
+class DayInfoAdapter(dateActivity: DateActivity, var days:List<Day>,val viewModel: DateViewModel) : FragmentStateAdapter(dateActivity) {
     override fun getItemCount(): Int = days.size
 
     override fun createFragment(position: Int): Fragment {

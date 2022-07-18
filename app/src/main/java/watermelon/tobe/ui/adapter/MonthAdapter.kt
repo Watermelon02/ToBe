@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import kotlinx.coroutines.flow.StateFlow
 import watermelon.tobe.fragment.MonthFragment
 import watermelon.tobe.viewmodel.DateViewModel
 import java.util.*
@@ -15,7 +16,7 @@ import java.util.*
  * date : 2022/7/14 18:56
  * @param diffMonth 从该用户使用软件的月份到当前月份的差
  */
-class MonthAdapter(fragmentActivity: FragmentActivity, private val diffMonth: Int,private val viewModel: DateViewModel) :
+class MonthAdapter(fragmentActivity: FragmentActivity, private val diffMonth: Int) :
     FragmentStateAdapter(fragmentActivity) {
 
     override fun getItemCount(): Int = diffMonth
@@ -24,6 +25,6 @@ class MonthAdapter(fragmentActivity: FragmentActivity, private val diffMonth: In
         val calendar = Calendar.getInstance().apply {
             add(Calendar.MONTH,-position+diffMonth/2)
         }
-        return MonthFragment("${calendar[Calendar.YEAR]}-"+"${calendar[Calendar.MONTH]+1}",viewModel)
+        return MonthFragment("${calendar[Calendar.YEAR]}-"+"${calendar[Calendar.MONTH]+1}")
     }
 }

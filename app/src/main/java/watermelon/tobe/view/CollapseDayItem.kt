@@ -4,10 +4,12 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewParent
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import watermelon.tobe.viewmodel.DateViewModel
 
@@ -27,6 +29,7 @@ class CollapseDayItem(context: Context, attrs: AttributeSet?) : LinearLayout(con
             updateLayoutParams<MarginLayoutParams> {
                 this.bottomMargin =
                     ((collapseLayout.expandedHeight - collapseLayout.collapsedHeight) * 0.1).toInt()
+                requestLayout()
             }
         }
     }

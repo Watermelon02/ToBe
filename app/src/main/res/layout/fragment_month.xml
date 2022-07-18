@@ -4,14 +4,12 @@
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <watermelon.tobe.view.CollapsedRecycleView
-            android:id="@+id/module_date_fragment_month_recyclerview_day"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"/>
-
+            <watermelon.tobe.view.CollapsedRecycleView
+                android:id="@+id/fragment_month_recyclerview_day"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"/>
     </FrameLayout>
 </layout>

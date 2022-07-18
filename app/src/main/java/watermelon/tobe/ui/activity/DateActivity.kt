@@ -2,8 +2,10 @@ package watermelon.tobe.ui.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.delay
@@ -24,32 +26,36 @@ import java.util.*
 class DateActivity : BaseActivity() {
     private lateinit var viewModel: DateViewModel
     private var isScrolling = false
+    private var firstInit = false
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = DateViewModel()
+        viewModel = ViewModelProvider(this)[DateViewModel::class.java]
         val binding = DataBindingUtil.setContentView<ActivityDateBinding>(
             this,
             R.layout.activity_date
         )
         binding.apply {
             activityDateViewPagerMonth.adapter =
-                MonthAdapter(this@DateActivity, TOTAL_MONTH, viewModel)
+                MonthAdapter(this@DateActivity, TOTAL_MONTH)
             //旋转180度，让其向左排列月份；同时在MonthFragment中让里面的内容翻转180度,以正常显示内容
             activityDateViewPagerMonth.rotationY = 180f
+            activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
             activityDateViewPagerDay.adapter =
                 DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0), viewModel)
             activityDateCollapseLayout.collapseListener = {
-                viewModel.collapsedState.value = DateViewModel.CollapsedState.COLLAPSED
+                viewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
             }
             activityDateCollapseLayout.expandListener = {
-                viewModel.collapsedState.value = DateViewModel.CollapsedState.EXPAND
+                viewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)
+            }
+            safeLaunch {//初始化,让上方vp到中间当前月份
+                //初始化下方vp的数据
+                viewModel.emitDays("${viewModel.currentYear}-${viewModel.currentMonth + 1}")
             }
             //对当前vp应该显示日期的监听，当接收到数据时，切换到对应item
             safeLaunch {
-                delay(50)
-                activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
                 DateCalculator.currentDate.collect {
                     val currentYear = it.split("-")[0].toInt()
                     val currentMonth = it.split("-")[1].toInt()
@@ -58,8 +64,16 @@ class DateActivity : BaseActivity() {
                         //当切换了月份后点击日期,需要改变下方vp中的值
                         viewModel.emitDays("${currentYear}-${currentMonth}")
                     }
-                    //day-1才是对应的index
-                    activityDateViewPagerDay.currentItem = currentDay - 1
+                    if (!firstInit) {
+                        val calendar = Calendar.getInstance()
+                        calendar[Calendar.DATE] = 1
+                        //减去为填充满一周的上个月数据
+                        activityDateViewPagerDay.currentItem =
+                            currentDay - 1 - calendar[Calendar.DAY_OF_WEEK]
+                    } else {
+                        //day-1才是对应的index
+                        activityDateViewPagerDay.currentItem = currentDay - 1
+                    }
                     lastYear = currentYear
                     lastMonth = currentMonth
                     lastDay = currentDay
@@ -77,8 +91,6 @@ class DateActivity : BaseActivity() {
                         )
                         diffResult.dispatchUpdatesTo(activityDateViewPagerDay.adapter as DayInfoAdapter)
                         (activityDateViewPagerDay.adapter as DayInfoAdapter).days = it
-                        activityDateViewPagerDay.currentItem =
-                            DateCalculator.currentDate.value.split("-")[2].toInt()
                     }
                 }
             }

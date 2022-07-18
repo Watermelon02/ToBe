@@ -5,9 +5,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.view.updateLayoutParams
+import androidx.viewpager2.widget.ViewPager2
 import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
 
@@ -30,12 +32,13 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
     var expandListener: (() -> Unit)? = null
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        if (collapsedHeight == 0 && expandedHeight == 0){
+        if (collapsedHeight == 0 && expandedHeight == 0) {
             screenHeight = measuredHeight
-            collapsedHeight = (screenHeight *0.1f).toInt()
-            expandedHeight = (screenHeight* 0.9f).toInt()
+            collapsedHeight = (screenHeight * 0.1f).toInt()
+            expandedHeight = (screenHeight * 0.9f).toInt()
         }
     }
+
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         return when (ev?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -88,7 +91,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
             }
             else -> {
                 val childHeight1 = getChildAt(5).height
-                if (totalDy > (expandedHeight-collapsedHeight) * 0.5) {
+                if (totalDy > (expandedHeight - collapsedHeight) * 0.5) {
                     val expandAnimator = ValueAnimator.ofInt(childHeight1, expandedHeight)
                     expandAnimator.addUpdateListener {
                         getChildAt(5).updateLayoutParams<LayoutParams> {
@@ -98,6 +101,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     }
                     expandAnimator.doOnEnd {
                         collapsedState = DateViewModel.CollapsedState.EXPAND
+                        getCollapsedRecyclerView()?.collapsedState =  DateViewModel.CollapsedState.EXPAND
                         expandListener?.invoke()
                         isScrolling = false
                     }
@@ -112,6 +116,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
                     }
                     collapseAnimator.doOnEnd {
                         collapsedState = DateViewModel.CollapsedState.COLLAPSED
+                        getCollapsedRecyclerView()?.collapsedState =  DateViewModel.CollapsedState.COLLAPSED
                         collapseListener?.invoke()
                         isScrolling = false
                     }
@@ -121,6 +126,17 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
         }
 
         return super.onTouchEvent(event)
+    }
+
+    private fun getCollapsedRecyclerView(): CollapsedRecycleView? {
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            if (child is ViewPager2) {
+                val innerViewPagerLayout = (((((((child).getChildAt(0)) as ViewGroup).getChildAt(0)) as ViewGroup).getChildAt(0))as ViewGroup ).getChildAt(0)
+                return innerViewPagerLayout as CollapsedRecycleView
+            }
+        }
+        return null
     }
 
 }

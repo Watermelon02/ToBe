@@ -3,6 +3,7 @@ package watermelon.tobe.view
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewParent
 import androidx.core.view.updateLayoutParams
@@ -21,10 +22,9 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
     private var expandedHeight = 0
     private var childRect: Rect = Rect()
 
-
     //上一个被选中的child
     private var lastChosenChild = -1
-    var collapsedState = DateViewModel.CollapsedState.COLLAPSED
+    var collapsedState = DateViewModel.CollapsedState.HALF_EXPAND
         set(value) {
             if (value != field) {
                 firstInit = true
@@ -34,8 +34,11 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
                     }
                 }
             }
+            if (value == DateViewModel.CollapsedState.COLLAPSED) expandListener?.invoke() else if (value == DateViewModel.CollapsedState.EXPAND) collapseListener?.invoke()
             field = value
         }
+    var collapseListener: (() -> Unit)? = null
+    var expandListener: (() -> Unit)? = null
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
         val collapseLayout = getCollapseLayout(parent)
@@ -44,7 +47,6 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
             expandedHeight = collapseLayout.expandedHeight
             firstInit = false
         }
-
         for (i in 0..childCount) {
             val child = getChildAt(i)
             if (child != null) {

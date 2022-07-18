@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
 
 /**
@@ -17,6 +19,15 @@ import kotlin.math.absoluteValue
 class InnerViewPagerLayout(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     private var lastX = 0f
     private var lastY = 0f
+    var collapsedState = DateViewModel.CollapsedState.HALF_EXPAND
+        set(value) {
+            if (value != field) {
+                    getChildAt(0)?.let {
+                        (it as CollapsedRecycleView).collapsedState = collapsedState
+                    }
+            }
+            field = value
+        }
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         when (ev?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -27,14 +38,19 @@ class InnerViewPagerLayout(context: Context, attrs: AttributeSet?) : LinearLayou
                 val dx = ev.rawX - lastX
                 val dy = ev.rawY - lastY
                 if (dx.absoluteValue > dy.absoluteValue) {
-                    if ((getChildAt(0).canScrollHorizontally(1) && dx < 0) || (getChildAt(0).canScrollHorizontally(
-                            -1
-                        ) && dx > 0)
-                    ) {
-                        parent.requestDisallowInterceptTouchEvent(true)
+                    (getChildAt(0) as CollapsedRecycleView).layoutManager?.let {
+                        Log.d("testTag", "(InnerViewPager.kt:33) -> ${(it as GridLayoutManager).findFirstVisibleItemPosition()}.${dx}")
+                        if (((it as GridLayoutManager).findFirstVisibleItemPosition() == 0 && dx > 0) ||
+                            ((it as GridLayoutManager).findLastVisibleItemPosition() == 34 && dx < 0)||((it as GridLayoutManager).findLastVisibleItemPosition() == 41 && dx < 0)
+                        ) {
+                            Log.d("testTag", "(InnerViewPager.kt:33) -> 1")
+                            parent.requestDisallowInterceptTouchEvent(false)
+                        } else {
+                            Log.d("testTag", "(InnerViewPager.kt:36) -> 2")
+                            parent.requestDisallowInterceptTouchEvent(true)
+                        }
                     }
                 } else {
-                    parent.requestDisallowInterceptTouchEvent(false)
                 }
                 lastX = ev.rawX
                 lastY = ev.rawY

@@ -20,7 +20,7 @@ import watermelon.tobe.viewmodel.DateViewModel
  */
 class DayFragment(val time: String, val viewModel: DateViewModel) : Fragment() {
     @SuppressLint("SetTextI18n")
-    private lateinit var binding:FragmentDayBinding
+    private lateinit var binding: FragmentDayBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,17 +34,21 @@ class DayFragment(val time: String, val viewModel: DateViewModel) : Fragment() {
         val day = timeList[2].toInt()
         //去除yyyy,取MM-dd
         binding.fragmentDayTitle.text = "${month}-${day}"
+        viewLifecycleOwner.safeLaunch {
+            viewModel.days.collectLatest {
+                if (it.isNotEmpty()){
+                    var monthBeginning = 0
+                    for (i in it.indices){
+                        if (it[i].date.split("-")[2] == "1"){
+                            monthBeginning = i
+                        }
+                    }
+                    binding.fragmentDayLunarCalendar.text = it[monthBeginning-1+day].lunarCalendar
+                    binding.fragmentDaySuit.text = it[monthBeginning-1+day].suit
+                }
+            }
+        }
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewLifecycleOwner.safeLaunch {
-            //获取日期对应的数据
-            viewModel.queryHoliday(time).collectLatest {
-                binding.fragmentDayLunarCalendar.text = it?.lunarCalendar
-                binding.fragmentDaySuit.text = it?.suit
-            }
-        }
-    }
 }
