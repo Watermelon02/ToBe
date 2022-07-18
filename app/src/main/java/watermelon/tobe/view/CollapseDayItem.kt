@@ -61,8 +61,6 @@ class CollapseDayItem(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         animator?.addUpdateListener {
             val value = it.animatedValue as Float
             backGroundRadius = value * height / 2
-            Log.d("testTag", "(CollapseDayItem.kt:63) -> ${backGroundRadius}")
-
             invalidate()
         }
         animator?.start()

@@ -52,13 +52,13 @@ class DateViewModel : ViewModel() {
             val calendar = Calendar.getInstance()
             val list = arrayListOf<Day>()
             calendar[Calendar.YEAR] = dayList[0].date.split("-")[0].toInt()
-            calendar[Calendar.MONTH] = dayList[0].date.split("-")[1].toInt() - 1
+            calendar[Calendar.MONTH] = dayList[0].date.split("-")[1].toInt() - 2
             calendar[Calendar.DATE] = 1 //把日期设置为当月第一天
             calendar.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
             for (i in calendar[Calendar.DATE] - dayList[0].weekDay + 1..calendar[Calendar.DATE]) {
                 val day =
                     DateRepository.queryHoliday(
-                        "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] }-$i"
+                        "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] +1}-$i"
                     )
                 list.add(day)
             }
