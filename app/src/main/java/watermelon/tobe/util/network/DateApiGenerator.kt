@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
  * email : 1446157077@qq.com
  * date : 2022/6/20 11:01
  */
-object ApiGenerator {
+object DateApiGenerator {
     const val APP_ID ="e1fkqpoasgomn92q"
     const val APP_SECRET = "RnZHRGR5ZTNkaTVGR0F2ekRObSt4UT09"
     private lateinit var instance: Retrofit

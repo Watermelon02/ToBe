@@ -3,9 +3,9 @@ package watermelon.tobe.repo.service
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import watermelon.lightmusic.util.network.ApiGenerator
-import watermelon.lightmusic.util.network.ApiGenerator.APP_ID
-import watermelon.lightmusic.util.network.ApiGenerator.APP_SECRET
+import watermelon.lightmusic.util.network.DateApiGenerator
+import watermelon.lightmusic.util.network.DateApiGenerator.APP_ID
+import watermelon.lightmusic.util.network.DateApiGenerator.APP_SECRET
 import watermelon.tobe.repo.bean.HolidayResponse
 import watermelon.tobe.repo.bean.MonthResponse
 
@@ -33,6 +33,6 @@ interface HolidayService {
 
 
     companion object {
-        val INSTANCE by lazy { ApiGenerator.getApiService(HolidayService::class) }
+        val INSTANCE by lazy { DateApiGenerator.getApiService(HolidayService::class) }
     }
 }

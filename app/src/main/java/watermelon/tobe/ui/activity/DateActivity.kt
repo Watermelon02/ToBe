@@ -6,12 +6,17 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.widget.ViewPager2
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import watermelon.lightmusic.base.BaseActivity
 import watermelon.tobe.R
 import watermelon.tobe.databinding.ActivityDateBinding
+import watermelon.tobe.repo.bean.Todo
+import watermelon.tobe.repo.service.ToDoService
 import watermelon.tobe.ui.adapter.DayInfoAdapter
 import watermelon.tobe.ui.adapter.MonthAdapter
 import watermelon.tobe.util.extension.safeLaunch
@@ -20,6 +25,7 @@ import watermelon.tobe.util.local.DateCalculator.TOTAL_MONTH
 import watermelon.tobe.util.local.DateCalculator.lastDay
 import watermelon.tobe.util.local.DateCalculator.lastMonth
 import watermelon.tobe.util.local.DateCalculator.lastYear
+import watermelon.tobe.util.network.ToDoApiGenerator
 import watermelon.tobe.viewmodel.DateViewModel
 import java.util.*
 
@@ -141,8 +147,14 @@ class DateActivity : BaseActivity() {
                     lastPosition = position
                 }
             })
-
-
+        }
+        safeLaunch {
+            //test
+            lifecycleScope.launch (Dispatchers.IO){
+                ToDoService.INSTANCE.login("1446157077@qq.com","ai1wei2xi3")
+                val response = ToDoService.INSTANCE.queryTodoList(0,0,0,1)
+                Log.d("testTag", "(DateActivity.kt:150) -> ${response.data.datas[0].content}")
+            }
         }
     }
 }
