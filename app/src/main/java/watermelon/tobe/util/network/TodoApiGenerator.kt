@@ -1,6 +1,7 @@
 package watermelon.tobe.util.network
 
 import android.content.Context
+import com.google.gson.Gson
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
@@ -8,6 +9,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import watermelon.lightmusic.util.local.GsonInstance
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 

@@ -11,16 +11,16 @@ import androidx.room.PrimaryKey
  */
 @Entity
 data class Todo(
-    val completeDate: String,
-    val completeDateStr: String,
-    val content: String,
-    val date: Long,
-    val dateStr: String,
+    val completeDate: String = "",
+    val completeDateStr: String = "",
+    val content: String = "",
+    val date: Long = 0,
+    val dateStr: String = "",
     @PrimaryKey
-    val id: Long,
-    val priority: Int,
-    val status: Int,
-    val title: String,
-    val type: Long,
-    val userId: Int
+    val id: Long = 0,
+    val priority: Int = 0,
+    val status: Int = 0,
+    val title: String = "",
+    val type: Long = 0,
+    val userId: Int = 0
 )

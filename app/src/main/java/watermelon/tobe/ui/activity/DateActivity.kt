@@ -2,21 +2,16 @@ package watermelon.tobe.ui.activity
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.widget.ViewPager2
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import watermelon.lightmusic.base.BaseActivity
 import watermelon.tobe.R
 import watermelon.tobe.databinding.ActivityDateBinding
-import watermelon.tobe.repo.bean.Todo
-import watermelon.tobe.repo.service.ToDoService
 import watermelon.tobe.ui.adapter.DayInfoAdapter
 import watermelon.tobe.ui.adapter.MonthAdapter
 import watermelon.tobe.util.extension.safeLaunch
@@ -25,23 +20,20 @@ import watermelon.tobe.util.local.DateCalculator.TOTAL_MONTH
 import watermelon.tobe.util.local.DateCalculator.lastDay
 import watermelon.tobe.util.local.DateCalculator.lastMonth
 import watermelon.tobe.util.local.DateCalculator.lastYear
-import watermelon.tobe.util.network.ToDoApiGenerator
 import watermelon.tobe.viewmodel.DateViewModel
 import java.util.*
 
 class DateActivity : BaseActivity() {
     private lateinit var viewModel: DateViewModel
+    private lateinit var binding: ActivityDateBinding
+    private var yearTextWidth = 0
     private var isScrolling = false
-    private var firstInit = false
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[DateViewModel::class.java]
-        val binding = DataBindingUtil.setContentView<ActivityDateBinding>(
-            this,
-            R.layout.activity_date
-        )
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_date)
         binding.apply {
             activityDateViewPagerMonth.adapter =
                 MonthAdapter(this@DateActivity, TOTAL_MONTH)
@@ -56,6 +48,49 @@ class DateActivity : BaseActivity() {
             activityDateCollapseLayout.expandListener = {
                 viewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)
             }
+            //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
+            activityDateViewPagerMonth.registerOnPageChangeCallback(object :
+                ViewPager2.OnPageChangeCallback() {
+                private var lastPosition = TOTAL_MONTH / 2
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int
+                ) {
+                    //1为RightToLeft,0为LeftToRight
+                    val direction = if (lastPosition == position) 0 else 1
+                    activityDateNumberMonth.translate(
+                        direction,
+                        positionOffset
+                    )
+                }
+
+                override fun onPageScrollStateChanged(state: Int) {
+                    if (state == 2) isScrolling = false
+                    super.onPageScrollStateChanged(state)
+                }
+
+                override fun onPageSelected(position: Int) {
+                    //改变年份
+                    val calendar = Calendar.getInstance()
+                    calendar.add(Calendar.MONTH, TOTAL_MONTH / 2 - position)
+                    yearTextWidth = binding.activityDateNumberYear.width
+                    if (calendar[Calendar.YEAR] < viewModel.currentYear) {
+                        binding.activityDateNumberYear.animateToLastYear(calendar)
+                    } else if (calendar[Calendar.YEAR] > viewModel.currentYear) {
+                        binding.activityDateNumberYear.animateToNextYear(calendar)
+                    }
+                    viewModel.currentYear = calendar[Calendar.YEAR]
+                    viewModel.currentMonth = calendar[Calendar.MONTH]
+                    //改变月份
+                    if (position > lastPosition) {
+                        activityDateNumberMonth.changePosition(1)
+                    } else {
+                        activityDateNumberMonth.changePosition(0)
+                    }
+                    lastPosition = position
+                }
+            })
             safeLaunch {//初始化,让上方vp到中间当前月份
                 //初始化下方vp的数据
                 viewModel.emitDays("${viewModel.currentYear}-${viewModel.currentMonth}")
@@ -92,67 +127,32 @@ class DateActivity : BaseActivity() {
                     }
                 }
             }
-            //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
-            activityDateViewPagerMonth.registerOnPageChangeCallback(object :
-                ViewPager2.OnPageChangeCallback() {
-                private var lastPosition = TOTAL_MONTH / 2
-                override fun onPageScrolled(
-                    position: Int,
-                    positionOffset: Float,
-                    positionOffsetPixels: Int
-                ) {
-                    //1为RightToLeft,0为LeftToRight
-                    val direction = if (lastPosition == position) 0 else 1
-                    activityDateNumberMonth.translate(
-                        direction,
-                        positionOffset
-                    )
-                }
-
-                override fun onPageScrollStateChanged(state: Int) {
-                    if (state == 2) isScrolling = false
-                    super.onPageScrollStateChanged(state)
-                }
-
-                override fun onPageSelected(position: Int) {
-                    //改变年份
-                    val calendar = Calendar.getInstance()
-                    calendar.add(Calendar.MONTH, TOTAL_MONTH / 2 - position)
-                    val yearTextWidth = binding.activityDateNumberYear.width
-                    if (calendar[Calendar.YEAR] < viewModel.currentYear) {
-                        binding.activityDateNumberYear.animate().x(yearTextWidth / 2f).alpha(0f)
-                            .withEndAction {
-                                binding.activityDateNumberYear.text =
-                                    calendar[Calendar.YEAR].toString()
-                                activityDateNumberYear.x = -yearTextWidth / 2f
-                                activityDateNumberYear.animate().x(0f).alpha(1f)
-                            }
-                    } else if (calendar[Calendar.YEAR] > viewModel.currentYear) {
-                        binding.activityDateNumberYear.animate().x(-yearTextWidth / 2f).alpha(0f)
-                            .withEndAction {
-                                binding.activityDateNumberYear.text =
-                                    calendar[Calendar.YEAR].toString()
-                                activityDateNumberYear.x = yearTextWidth / 2f
-                                activityDateNumberYear.animate().x(0f).alpha(1f)
-                            }
-                    }
-                    viewModel.currentYear = calendar[Calendar.YEAR]
-                    viewModel.currentMonth = calendar[Calendar.MONTH]
-                    //改变月份
-                    if (position > lastPosition) {
-                        activityDateNumberMonth.changePosition(1)
-                    } else {
-                        activityDateNumberMonth.changePosition(0)
-                    }
-                    lastPosition = position
-                }
-            })
-        }
-        safeLaunch {
-            //test login
-            lifecycleScope.launch (Dispatchers.IO){
-                ToDoService.INSTANCE.login("1446157077@qq.com","ai1wei2xi3")
-            }
         }
     }
+
+    /**通过动画让年份切换到上一年*/
+    private fun TextView.animateToLastYear(calendar: Calendar) =
+        animate().x(yearTextWidth / 2f).alpha(0f)
+            .withEndAction {
+                binding.activityDateNumberYear.text =
+                    calendar[Calendar.YEAR].toString()
+                x = -yearTextWidth / 2f
+                animate().x(0f).alpha(1f)
+            }
+
+    /**通过动画让年份切换到下一年*/
+    private fun TextView.animateToNextYear(calendar: Calendar) =
+        animate().x(-yearTextWidth / 2f).alpha(0f)
+            .withEndAction {
+                binding.activityDateNumberYear.text =
+                    calendar[Calendar.YEAR].toString()
+                x = yearTextWidth / 2f
+                animate().x(0f).alpha(1f)
+            }
 }
+
+
+
+
+
+
