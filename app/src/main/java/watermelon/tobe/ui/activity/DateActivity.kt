@@ -49,7 +49,7 @@ class DateActivity : BaseActivity() {
             activityDateViewPagerMonth.rotationY = 180f
             activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
             activityDateViewPagerDay.adapter =
-                DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0), viewModel)
+                DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0))
             activityDateCollapseLayout.collapseListener = {
                 viewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
             }
@@ -149,11 +149,9 @@ class DateActivity : BaseActivity() {
             })
         }
         safeLaunch {
-            //test
+            //test login
             lifecycleScope.launch (Dispatchers.IO){
                 ToDoService.INSTANCE.login("1446157077@qq.com","ai1wei2xi3")
-                val response = ToDoService.INSTANCE.queryTodoList(0,0,0,1)
-                Log.d("testTag", "(DateActivity.kt:150) -> ${response.data.datas[0].content}")
             }
         }
     }

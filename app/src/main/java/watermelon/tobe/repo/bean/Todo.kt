@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
  */
 @Entity
 data class Todo(
-    val completeDate: Any,
+    val completeDate: String,
     val completeDateStr: String,
     val content: String,
     val date: Long,

@@ -8,6 +8,7 @@ import watermelon.tobe.repo.bean.Todo
  * email : 1446157077@qq.com
  * date : 2022/7/19 10:43
  */
+@Dao
 interface TodoDao {
     @Query("SELECT * FROM todo WHERE date =:date")
     fun queryTodo(date: String): Todo?
