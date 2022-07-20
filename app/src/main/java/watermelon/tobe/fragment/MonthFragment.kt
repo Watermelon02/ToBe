@@ -1,8 +1,6 @@
 package watermelon.tobe.fragment
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +16,6 @@ import watermelon.tobe.view.MonthlyViewLayoutManager
 import watermelon.tobe.view.WeeklyViewLayoutManager
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.MonthFragmentViewModel
-import kotlin.math.absoluteValue
 
 /**
  * description ： TODO:类的作用

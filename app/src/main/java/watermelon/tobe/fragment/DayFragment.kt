@@ -41,7 +41,7 @@ class DayFragment(private val time: String) : Fragment() {
         val day = timeList[2].toInt()
         //去除yyyy,取MM-dd
         binding.fragmentDayTitle.text = "${month}-${day}"
-        binding.fragmentDayTodoList.adapter = TodoAdapter(listOf())
+        binding.fragmentDayTodoList.adapter = TodoAdapter(listOf(),dayFragmentViewModel)
         binding.fragmentDayTodoList.layoutManager = LinearLayoutManager(requireContext())
         viewLifecycleOwner.safeLaunch {
             //监听日期数据

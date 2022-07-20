@@ -6,10 +6,11 @@ import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import com.google.android.material.card.MaterialCardView
 
 /**
- * description ： 解决滑动冲突，同时根据传入的颜色绘制动态渐变背景
+ * description ： 根据传入的颜色绘制动态渐变背景
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/17 10:48
@@ -21,6 +22,7 @@ class ItemColorfulBackground(context: Context, attrs: AttributeSet?) :
     private var color1 = Color.WHITE
     private var color2 = Color.WHITE
     private val paint = Paint().apply { style = Paint.Style.FILL }
+    private var mWidth =0
     private var animator1 = ValueAnimator.ofFloat(1f, 0.25f).apply {
         duration = 9000
         repeatMode = ValueAnimator.REVERSE
