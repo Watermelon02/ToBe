@@ -4,9 +4,6 @@ import android.content.Context
 import android.graphics.Rect
 import android.util.Log
 import android.util.SparseArray
-import android.widget.LinearLayout
-import androidx.core.view.ViewCompat.animate
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -24,10 +21,13 @@ class WeeklyViewLayoutManager(
     private val itemRect = SparseArray<Rect>()
     private var itemHeight = 0
     private var itemWidth = 0
-
+    private var totalDx = 0
+    private var totalWidth = 0
+    var scrollPosition = 0
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         super.onLayoutChildren(recycler, state)
-        if (state.itemCount>0){
+        if (state.isPreLayout) return
+        if (state.itemCount > 0) {
             //回收复用
             detachAndScrapAttachedViews(recycler)
             //随便获取一个view,测量宽高
@@ -43,9 +43,10 @@ class WeeklyViewLayoutManager(
                 itemRect[i] = rect
                 offsetX += interval
             }
+            totalWidth = maxOf(width,totalDx)
             for (i in 0 until visibleCount) {
                 val rect = itemRect[i]
-                val view = recycler.getViewForPosition(i)
+                val view = recycler.getViewForPosition(i+scrollPosition)
                 addView(view)
                 measureChildWithMargins(view, 0, 0)
                 layoutDecorated(view, rect.left, rect.top, rect.right, rect.bottom)

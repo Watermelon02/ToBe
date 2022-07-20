@@ -2,6 +2,7 @@ package watermelon.tobe.ui.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
@@ -42,12 +43,6 @@ class DateActivity : BaseActivity() {
             activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
             activityDateViewPagerDay.adapter =
                 DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0))
-            activityDateCollapseLayout.collapseListener = {
-                viewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
-            }
-            activityDateCollapseLayout.expandListener = {
-                viewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)
-            }
             //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
             activityDateViewPagerMonth.registerOnPageChangeCallback(object :
                 ViewPager2.OnPageChangeCallback() {

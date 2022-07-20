@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
  * email : 1446157077@qq.com
  * date : 2022/7/14 20:55
  */
-class StickGridLayoutManager(context: Context?, spanCount: Int) :
+class MonthlyViewLayoutManager(context: Context?, spanCount: Int) :
     GridLayoutManager(context, spanCount) {
     override fun canScrollVertically(): Boolean = false
 }

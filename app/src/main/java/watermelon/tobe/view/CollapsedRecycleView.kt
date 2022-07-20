@@ -1,11 +1,14 @@
 package watermelon.tobe.view
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewParent
+import android.widget.LinearLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.viewmodel.DateViewModel
@@ -21,10 +24,12 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
     private var collapsedHeight = 0
     private var expandedHeight = 0
     private var childRect: Rect = Rect()
+    var isScrolling = false
+    val collapseLayout by lazy { getCollapseLayout(parent) }
 
     //上一个被选中的child
     private var lastChosenChild = -1
-    var collapsedState = DateViewModel.CollapsedState.HALF_EXPAND
+    var collapsedState = DateViewModel.CollapsedState.COLLAPSED
         set(value) {
             if (value != field) {
                 firstInit = true
@@ -39,6 +44,9 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
         }
     var collapseListener: (() -> Unit)? = null
     var expandListener: (() -> Unit)? = null
+    private var lastX = 0f
+    private var lastY = 0f
+    private var totalDy = 0f
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
         val collapseLayout = getCollapseLayout(parent)
@@ -58,27 +66,6 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
             }
         }
         super.onMeasure(widthSpec, heightSpec)
-    }
-
-    override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
-        if (e.action == MotionEvent.ACTION_UP) {
-            val y = e.rawY
-            val x = e.rawX
-            for (i in 0..childCount) {
-                val child = getChildAt(i)
-                if (child != null) {
-                    child.getGlobalVisibleRect(childRect)
-                    if (childRect.contains(x.toInt(), y.toInt())) {//如果选中了该view
-                        if (i != lastChosenChild) {
-                            (child as CollapseDayItem).chooseAnimate()
-                            if (lastChosenChild != -1) getChildAt(lastChosenChild)?.let { (it as CollapseDayItem).cancelAnimate() }
-                            lastChosenChild = i
-                        }
-                    }
-                }
-            }
-        }
-        return super.onInterceptTouchEvent(e)
     }
 
     override fun onDetachedFromWindow() {

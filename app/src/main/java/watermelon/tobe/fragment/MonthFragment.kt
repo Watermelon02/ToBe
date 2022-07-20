@@ -7,17 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import watermelon.tobe.databinding.FragmentMonthBinding
 import watermelon.tobe.ui.adapter.DaysAdapter
 import watermelon.tobe.util.extension.safeLaunch
-import watermelon.tobe.view.StickGridLayoutManager
+import watermelon.tobe.view.MonthlyViewLayoutManager
 import watermelon.tobe.view.WeeklyViewLayoutManager
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.MonthFragmentViewModel
+import kotlin.math.absoluteValue
 
 /**
  * description ： TODO:类的作用
@@ -30,43 +29,65 @@ class MonthFragment(
 ) : Fragment() {
     private lateinit var binding: FragmentMonthBinding
     private val monthFragmentViewModel by lazy { ViewModelProvider(this)[MonthFragmentViewModel::class.java] }
+    private val dateViewModel: DateViewModel by lazy { ViewModelProvider(requireActivity())[DateViewModel::class.java] }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dateViewModel = ViewModelProvider(requireActivity())[DateViewModel::class.java]
         binding =
             FragmentMonthBinding.inflate(LayoutInflater.from(context), null, false)
         binding.apply {
-            fragmentMonthRecyclerviewDay.recycledViewPool.setMaxRecycledViews(0,50)
-            fragmentMonthRecyclerviewDay.layoutManager =
-                WeeklyViewLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            fragmentMonthRecyclerviewDay.recycledViewPool.setMaxRecycledViews(0, 50)
             fragmentMonthRecyclerviewDay.adapter =
-                DaysAdapter(listOf())
+                DaysAdapter(dateViewModel.dayFragmentDays.value)
+            fragmentMonthInnerScrollLayout.collapseListener = {
+                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
+            }
+            fragmentMonthInnerScrollLayout.scrollingListener = {
+                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.Scrolling)
+            }
+            fragmentMonthInnerScrollLayout.expandListener = {
+                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)
+            }
+            fragmentMonthInnerScrollLayout.setMonthLayoutManager = {
+                fragmentMonthRecyclerviewDay.layoutManager =
+                    MonthlyViewLayoutManager(context, 7)
+                fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
+            }
+            fragmentMonthInnerScrollLayout.setWeekLayoutManager = {
+                fragmentMonthRecyclerviewDay.layoutManager =
+                    WeeklyViewLayoutManager(
+                        requireContext(),
+                        LinearLayoutManager.HORIZONTAL,
+                        false
+                    )
+                fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
+            }
             viewLifecycleOwner.safeLaunch {
-                dateViewModel.collapsedState.collectLatest {
+                dateViewModel.collapsedState.collect {
                     fragmentMonthRecyclerviewDay.collapsedState = it
-                    if (it == DateViewModel.CollapsedState.COLLAPSED) {
+                    fragmentMonthInnerScrollLayout.collapsedState = it
+                    if (it == DateViewModel.CollapsedState.COLLAPSED && fragmentMonthRecyclerviewDay.layoutManager !is WeeklyViewLayoutManager) {
+                        Log.d("testTag", "(MonthFragment.kt:72) -> there")
                         fragmentMonthRecyclerviewDay.layoutManager =
                             WeeklyViewLayoutManager(
                                 requireContext(),
                                 LinearLayoutManager.HORIZONTAL,
                                 false
                             )
-                    } else if (it == DateViewModel.CollapsedState.EXPAND) {
+                        fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
+                    } else if (it == DateViewModel.CollapsedState.EXPAND&& fragmentMonthRecyclerviewDay.layoutManager !is MonthlyViewLayoutManager) {
                         fragmentMonthRecyclerviewDay.layoutManager =
-                            StickGridLayoutManager(context, 7)
+                            MonthlyViewLayoutManager(context, 7)
+                        fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
                     }
-                    fragmentMonthRecyclerviewDay.adapter =
-                        DaysAdapter(listOf())
                     monthFragmentViewModel.emitDays(month)
                 }
             }
             //让里面的内容翻转180度,以避免在DateActivity中的翻转让内部内容变成镜像
             root.rotationY = 180f
         }
-        monthFragmentViewModel.emitDays(month)
         viewLifecycleOwner.safeLaunch {
             monthFragmentViewModel.days.collectLatest {
                 it.let {
@@ -77,5 +98,17 @@ class MonthFragment(
             }
         }
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+/*        val collapse =
+            binding.fragmentMonthRecyclerviewDay.height - binding.fragmentMonthInnerScrollLayout.collapsedHeight
+        val expand =
+            binding.fragmentMonthRecyclerviewDay.height - binding.fragmentMonthInnerScrollLayout.expandedHeight
+        val collapsedState =
+            if (collapse.absoluteValue < expand.absoluteValue) DateViewModel.CollapsedState.COLLAPSED else DateViewModel.CollapsedState.EXPAND
+        Log.d("testTag", "(MonthFragment.kt:105) ->${binding.fragmentMonthRecyclerviewDay.height} , ${collapsedState}")*/
+        dateViewModel.emitCollapsedState(dateViewModel.collapsedState.value)
     }
 }
