@@ -6,6 +6,7 @@ import android.util.Log
 import android.util.SparseArray
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.absoluteValue
 
 /**
  * description ： 周视图LayoutManger，用于刚好展示一周的数据
@@ -21,7 +22,7 @@ class WeeklyViewLayoutManager(
     private val itemRect = SparseArray<Rect>()
     private var itemHeight = 0
     private var itemWidth = 0
-    private var totalDx = 0
+    var totalDx = 0
     private var totalWidth = 0
     var scrollPosition = 0
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
@@ -38,19 +39,30 @@ class WeeklyViewLayoutManager(
             var offsetX = 0
             itemWidth = getDecoratedMeasuredWidth(view)
             itemHeight = getDecoratedMeasuredHeight(view)
-            for (i in 0 until itemCount) {//获取所有item的rect，并存入itemRect
+            for (i in scrollPosition until itemCount) {//获取所有item的rect，并存入itemRect
                 val rect = Rect(offsetX, 0, offsetX + itemWidth, itemHeight)
                 itemRect[i] = rect
                 offsetX += interval
             }
-            totalWidth = maxOf(width,totalDx)
+            totalWidth = maxOf(width, totalDx)
             for (i in 0 until visibleCount) {
                 val rect = itemRect[i]
-                val view = recycler.getViewForPosition(i+scrollPosition)
+                val view = recycler.getViewForPosition(i + scrollPosition)
                 addView(view)
                 measureChildWithMargins(view, 0, 0)
                 layoutDecorated(view, rect.left, rect.top, rect.right, rect.bottom)
             }
         }
     }
+
+    /*override fun scrollHorizontallyBy(
+        dx: Int,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State?
+    ): Int {
+        val x = if (totalDx.absoluteValue < 200) super.scrollHorizontallyBy(dx, recycler, state) else 0
+        totalDx += x
+        return x
+    }*/
+
 }

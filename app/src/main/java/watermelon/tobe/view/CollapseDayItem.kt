@@ -2,6 +2,7 @@ package watermelon.tobe.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.ViewParent
 import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
@@ -20,27 +21,9 @@ class CollapseDayItem(context: Context, attrs: AttributeSet?) : LinearLayout(con
         field = value
     }
     private var firstInit =true
-    /*override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val collapseLayout = getCollapseLayout(parent)
-        *//*if (firstInit && collapseLayout.collapsedState == DateViewModel.CollapsedState.EXPAND) {
-            updateLayoutParams<MarginLayoutParams> {
-                this.bottomMargin =
-                    ((collapseLayout.expandedHeight - collapseLayout.collapsedHeight) * 0.1).toInt()
-            }
-            firstInit = false
-        }*//*
-        if (firstInit && collapseLayout.collapsedState == DateViewModel.CollapsedState.COLLAPSED){
-            updateLayoutParams<MarginLayoutParams> {
-                this.leftMargin = 0
-                this.rightMargin = 0
-            }
-            firstInit = false
-        }
-    }*/
 
-    private fun getCollapseLayout(parent: ViewParent): CollapseLayout {
-        return if (parent is CollapseLayout) parent else getCollapseLayout(parent.parent)
+    private fun getCollapseLayout(parent: ViewParent): CollapsedRecycleView {
+        return if (parent is CollapsedRecycleView) parent else getCollapseLayout(parent.parent)
     }
 
     //  被选中时的动画

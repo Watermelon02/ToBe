@@ -1,10 +1,12 @@
 package watermelon.tobe.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -69,7 +71,6 @@ class MonthFragment(
                     fragmentMonthRecyclerviewDay.collapsedState = it
                     fragmentMonthInnerScrollLayout.collapsedState = it
                     if (it == DateViewModel.CollapsedState.COLLAPSED && fragmentMonthRecyclerviewDay.layoutManager !is WeeklyViewLayoutManager) {
-                        Log.d("testTag", "(MonthFragment.kt:72) -> there")
                         fragmentMonthRecyclerviewDay.layoutManager =
                             WeeklyViewLayoutManager(
                                 requireContext(),
@@ -77,10 +78,15 @@ class MonthFragment(
                                 false
                             )
                         fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
-                    } else if (it == DateViewModel.CollapsedState.EXPAND&& fragmentMonthRecyclerviewDay.layoutManager !is MonthlyViewLayoutManager) {
+                    } else if (it == DateViewModel.CollapsedState.EXPAND && fragmentMonthRecyclerviewDay.layoutManager !is MonthlyViewLayoutManager) {
                         fragmentMonthRecyclerviewDay.layoutManager =
                             MonthlyViewLayoutManager(context, 7)
                         fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
+                        if (fragmentMonthRecyclerviewDay.height != fragmentMonthInnerScrollLayout.expandedHeight) {
+                            fragmentMonthRecyclerviewDay.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                height = fragmentMonthInnerScrollLayout.expandedHeight
+                            }
+                        }
                     }
                     monthFragmentViewModel.emitDays(month)
                 }
@@ -98,17 +104,5 @@ class MonthFragment(
             }
         }
         return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-/*        val collapse =
-            binding.fragmentMonthRecyclerviewDay.height - binding.fragmentMonthInnerScrollLayout.collapsedHeight
-        val expand =
-            binding.fragmentMonthRecyclerviewDay.height - binding.fragmentMonthInnerScrollLayout.expandedHeight
-        val collapsedState =
-            if (collapse.absoluteValue < expand.absoluteValue) DateViewModel.CollapsedState.COLLAPSED else DateViewModel.CollapsedState.EXPAND
-        Log.d("testTag", "(MonthFragment.kt:105) ->${binding.fragmentMonthRecyclerviewDay.height} , ${collapsedState}")*/
-        dateViewModel.emitCollapsedState(dateViewModel.collapsedState.value)
     }
 }

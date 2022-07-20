@@ -27,7 +27,7 @@ class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(
         if (collapsedHeight == 0 && expandedHeight == 0) {
             screenHeight = measuredHeight
             collapsedHeight = (screenHeight * 0.1f).toInt()
-            expandedHeight = (screenHeight * 0.9f).toInt()
+            expandedHeight = (screenHeight * 0.6f).toInt()
         }
     }
 }

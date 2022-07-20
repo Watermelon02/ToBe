@@ -46,7 +46,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
     var scrollingListener: (() -> Unit)? = null
     var setMonthLayoutManager: (() -> Unit)? = null
     var setWeekLayoutManager: (() -> Unit)? = null
-    var isMonthLayoutManager = false
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         super.onLayout(changed, l, t, r, b)
@@ -93,14 +92,12 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                         val childHeight = getChildAt(0).height
                         parent.requestDisallowInterceptTouchEvent(true)
                         //如果垂直滑动，但layoutManager不是月视图layoutManager,则切换
-                        if (((getChildAt(0) as RecyclerView).layoutManager is WeeklyViewLayoutManager)) {
+                        if (((getChildAt(0) as RecyclerView).layoutManager is WeeklyViewLayoutManager) && totalDy.absoluteValue > 60) {
                             setMonthLayoutManager?.invoke()
                         }
-                        if ((getChildAt(0) as RecyclerView).layoutManager is GridLayoutManager) {
-                            getChildAt(0).updateLayoutParams<MarginLayoutParams> {
-                                this.height = childHeight + dy.toInt()
-                                requestLayout()
-                            }
+                        getChildAt(0).updateLayoutParams<MarginLayoutParams> {
+                            this.height = childHeight + dy.toInt()
+                            requestLayout()
                         }
                         isScrolling = true
                         totalDy += dy.toInt()
@@ -128,15 +125,14 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                     if (collapsedState == DateViewModel.CollapsedState.COLLAPSED) {
                         val rv = getChildAt(0) as RecyclerView
                         if (rv.layoutManager is WeeklyViewLayoutManager) {
-                            Log.d("testTag", "(InnerViewPager.kt:131) -> ${totalDx}")
                             val count =
                                 if (totalDx < 0) {
                                     (rv.layoutManager as WeeklyViewLayoutManager).findLastVisibleItemPosition() / 7
                                 } else {
                                     (rv.layoutManager as WeeklyViewLayoutManager).findFirstVisibleItemPosition() / 7
                                 }
-                            Log.d("testTag", "(InnerViewPager.kt:130) -> ${count}")
                             (rv.layoutManager as WeeklyViewLayoutManager).scrollPosition = count * 7
+                            (rv.layoutManager as WeeklyViewLayoutManager).totalDx = 0
                             rv.layoutManager?.requestLayout()
                         }
                     }
@@ -144,6 +140,8 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                 scrollDirection = -1
                 totalDy = 0f
                 totalDx = 0f
+                lastX = 0f
+                lastY = 0f
             }
         }
         return super.dispatchTouchEvent(ev)
