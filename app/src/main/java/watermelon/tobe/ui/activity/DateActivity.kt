@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.collectLatest
 import watermelon.lightmusic.base.BaseActivity
 import watermelon.tobe.R
 import watermelon.tobe.databinding.ActivityDateBinding
+import watermelon.tobe.fragment.AddTodoDialogFragment
+import watermelon.tobe.fragment.UpdateDialogFragment
 import watermelon.tobe.ui.adapter.DayInfoAdapter
 import watermelon.tobe.ui.adapter.MonthAdapter
 import watermelon.tobe.util.extension.safeLaunch
@@ -28,6 +30,16 @@ class DateActivity : BaseActivity() {
     private lateinit var binding: ActivityDateBinding
     private var yearTextWidth = 0
     private var isScrolling = false
+    val addTodoBottomSheet by lazy {
+        AddTodoDialogFragment().apply {
+            isCancelable = true//设置点击外部是否可以取消
+        }
+    }
+    val updateTodoBottomSheet by lazy {
+        UpdateDialogFragment().apply {
+            isCancelable = true//设置点击外部是否可以取消
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +54,9 @@ class DateActivity : BaseActivity() {
             activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
             activityDateViewPagerDay.adapter =
                 DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0))
+            activityDateViewAddButton.setOnClickListener {
+                addTodoBottomSheet.show(supportFragmentManager, "add_todo")
+            }
             //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
             activityDateViewPagerMonth.registerOnPageChangeCallback(object :
                 ViewPager2.OnPageChangeCallback() {
@@ -119,6 +134,12 @@ class DateActivity : BaseActivity() {
                         diffResult.dispatchUpdatesTo(activityDateViewPagerDay.adapter as DayInfoAdapter)
                         (activityDateViewPagerDay.adapter as DayInfoAdapter).days = it
                     }
+                }
+            }
+            //对折叠状态进行监听，改变中间Button的状态
+            safeLaunch {
+                viewModel.collapsedState.collectLatest {
+                    binding.activityDateViewAddButton.doAnimation(it)
                 }
             }
         }

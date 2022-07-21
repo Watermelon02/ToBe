@@ -3,8 +3,10 @@ package watermelon.tobe.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import watermelon.tobe.repo.bean.Todo
 import watermelon.tobe.repo.repository.TodoRepository
@@ -24,28 +26,15 @@ class DayFragmentViewModel : ViewModel() {
         }
     }
 
-    fun addTodo(title: String, content: String, date: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            TodoRepository.addTodo(title, content, date)
-        }
-    }
-
     fun deleteTodo(todo: Todo) {
         viewModelScope.launch(Dispatchers.IO) {
             TodoRepository.deleteTodo(todo)
-        }
-    }
-
-    fun updateTodo(todo: Todo) {
-        viewModelScope.launch(Dispatchers.IO) {
-            TodoRepository.updateTodo(
-                todo.id,
-                todo.title,
-                todo.content,
-                todo.dateStr,
-                todo.priority,
-                todo.status
-            )
+            todoList.update {
+                for (i in 0..it.size){
+                    if (it[i] == todo) return@update it.subList(0,i)+it.subList(i+1,it.size)
+                }
+                return@update it
+            }
         }
     }
 }

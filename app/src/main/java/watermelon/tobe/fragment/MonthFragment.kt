@@ -44,7 +44,7 @@ class MonthFragment(
                 dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
             }
             fragmentMonthInnerScrollLayout.scrollingListener = {
-                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.Scrolling)
+                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.SCROLLING)
             }
             fragmentMonthInnerScrollLayout.expandListener = {
                 dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)

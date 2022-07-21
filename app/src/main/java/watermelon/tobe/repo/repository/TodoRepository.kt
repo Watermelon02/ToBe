@@ -1,5 +1,6 @@
 package watermelon.tobe.repo.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import watermelon.tobe.repo.bean.QueryTodoResponse
@@ -17,7 +18,7 @@ object TodoRepository {
     //远程数据获取到之前发送的假数据
     private val loadingData = listOf(Todo(title = "Loading", content = "Todo正在飞速加载！"))
     //两端都没有Todo时发送的假数据
-    private val emptyData = listOf(Todo(title = "Empty", content = "快来创建Todo吧！"))
+    val emptyData = listOf(Todo(title = "Empty", content = "快来创建Todo吧！"))
 
     suspend fun addTodo(title: String, content: String, date: String, priority: Int = 0) {
         val type = DateCalculator.formatDateForQueryHoliday(date).toLong()
@@ -58,10 +59,10 @@ object TodoRepository {
     suspend fun deleteTodo(todo: Todo) {
         try {
             ToDoService.INSTANCE.deleteTodo(todo.id)
-            TodoDatabase.getInstance().getTodoDao().deleteTodo(todo)
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        TodoDatabase.getInstance().getTodoDao().deleteTodo(todo)
     }
 
     fun queryTodoList(status: Int = -1, date: String, priority: Int = 0, index: Int = 1) =
@@ -87,16 +88,7 @@ object TodoRepository {
         index: Int = 1
     ) {
         //根据status决定是去获取已经完成的、未完成的、还是所有的Todo
-        val remote = when (status) {
-            0 -> ToDoService.INSTANCE.queryTodoListNotFinished(
-                status,
-                type,
-                priority,
-                index
-            )
-            1 -> ToDoService.INSTANCE.queryTodoListFinished(status, type, priority, index)
-            else -> ToDoService.INSTANCE.queryTodoListAll(type, priority, index)
-        }
+        val remote = ToDoService.INSTANCE.queryTodoListAll(status=status, type = type, priority = priority, index =  index)
         //对远端数据和本地数据进行比较，根据结果决定是否发送数据
         if (remote.errorCode == 0) {
             if (remote.data.datas.size != local.size) {

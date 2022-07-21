@@ -1,6 +1,5 @@
 package watermelon.tobe.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +22,16 @@ class DateViewModel : ViewModel() {
     //上方vp中存储的day
     val dayFragmentDays = MutableStateFlow(listOf<Day>())
     val collapsedState= MutableStateFlow(DateViewModel.CollapsedState.COLLAPSED)
+    var isTodoListChange = MutableSharedFlow<Long>()
     fun emitCollapsedState(state: DateViewModel.CollapsedState) {
         viewModelScope.launch {
             collapsedState.emit(state)
+        }
+    }
+
+    fun emitTodoListChange(){
+        viewModelScope.launch(Dispatchers.IO) {
+            isTodoListChange.emit(System.currentTimeMillis())
         }
     }
 
@@ -37,6 +43,6 @@ class DateViewModel : ViewModel() {
 
     //上方vp的折叠状态
     enum class CollapsedState {
-        EXPAND, COLLAPSED, HALF_EXPAND,Scrolling
+        EXPAND, COLLAPSED, HALF_EXPAND,SCROLLING
     }
 }

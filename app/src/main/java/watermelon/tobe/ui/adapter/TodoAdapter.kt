@@ -1,6 +1,7 @@
 package watermelon.tobe.ui.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -14,9 +15,11 @@ import watermelon.tobe.viewmodel.DayFragmentViewModel
  * email : 1446157077@qq.com
  * date : 2022/7/19 13:29
  */
-class TodoAdapter(var todoList: List<Todo>, val viewModel: DayFragmentViewModel) :
+class TodoAdapter(var todoList: List<Todo>, val viewModel: DayFragmentViewModel,val updateTodoListener:(todo:Todo)->Unit) :
     RecyclerView.Adapter<TodoAdapter.ViewHolder>() {
-    class ViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root){
+        var isRemoved = false
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(ItemTodoBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -28,15 +31,24 @@ class TodoAdapter(var todoList: List<Todo>, val viewModel: DayFragmentViewModel)
             itemTodoBlueButton.setColor(Color.BLUE)
             itemTodoRedButton.setColor(Color.RED)
             itemTodoRedButton.setOnClickListener {
-                toast("delete")
-//                viewModel.deleteTodo(todoList[position])
+                viewModel.deleteTodo(todoList[position])
+                holder.isRemoved = true
             }
-            itemTodoBlueButton.setOnClickListener {
-
+            itemTodoBlueButton.setOnClickListener{
+                updateTodoListener(todoList[position])
             }
         }
     }
 
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        if (holder.isRemoved){
+            holder.binding.root.animate().alpha(0f).withEndAction {
+                holder.binding.root.alpha = 1f
+                holder.isRemoved = false
+            }
+        }
+        super.onViewDetachedFromWindow(holder)
+    }
 
     override fun getItemCount(): Int = todoList.size
 }

@@ -13,14 +13,14 @@ import androidx.room.PrimaryKey
 data class Todo(
     val completeDate: String = "",
     val completeDateStr: String = "",
-    val content: String = "",
+    var content: String = "",
     val date: Long = 0,
     val dateStr: String = "",
     @PrimaryKey
     val id: Long = 0,
     val priority: Int = 0,
     val status: Int = 0,
-    val title: String = "",
+    var title: String = "",
     val type: Long = 0,
     val userId: Int = 0
 )
