@@ -2,7 +2,6 @@ package watermelon.tobe.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import watermelon.tobe.R
 import watermelon.tobe.viewmodel.DateViewModel

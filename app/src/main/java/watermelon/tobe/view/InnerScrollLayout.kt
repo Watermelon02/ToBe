@@ -27,10 +27,10 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
     private var lastY = 0f
     private var totalDy = 0f
     private var totalDx = 0f
-    var collapsedHeight = 0
+    private var collapsedHeight = 0
     var expandedHeight = 0
     private var firstInit = false
-    var isScrolling = false
+    private var isScrolling = false
     private var scrollDirection = -1
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
         set(value) {
@@ -41,17 +41,17 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
             }
             field = value
         }
-    var collapseListener: (() -> Unit)? = null
-    var expandListener: (() -> Unit)? = null
-    var scrollingListener: (() -> Unit)? = null
-    var setMonthLayoutManager: (() -> Unit)? = null
-    var setWeekLayoutManager: (() -> Unit)? = null
+    val collapsedParentLayout: CollapsedParentLayout by lazy {
+        getCollapseParentLayout(
+            parent
+        )
+    }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         super.onLayout(changed, l, t, r, b)
         if (!firstInit) {
-            collapsedHeight = getCollapseLayout(parent).collapsedHeight
-            expandedHeight = getCollapseLayout(parent).expandedHeight
+            collapsedHeight = collapsedParentLayout.collapsedHeight
+            expandedHeight = collapsedParentLayout.expandedHeight
             firstInit = true
         }
     }
@@ -71,10 +71,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                 }
                 if (scrollDirection == HORIZONTAL) {
                     (getChildAt(0) as CollapsedRecycleView).layoutManager?.let {
-                        if (it is GridLayoutManager && collapsedState == DateViewModel.CollapsedState.COLLAPSED) {
-                            //如果水平滑动，但layoutManager不是周视图layoutManager,则切换
-                            setWeekLayoutManager?.invoke()
-                        }
                         if (it is LinearLayoutManager) {
                             if ((it.findFirstVisibleItemPosition() == 0 && dx > 0) ||
                                 (it.findLastVisibleItemPosition() == 34 && dx < 0) || (it.findLastVisibleItemPosition() == 41 && dx < 0)
@@ -88,13 +84,9 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                     totalDx += dx.toInt()
                 } else {//垂直滑动
                     if ((dy > 0 && height + dy <= expandedHeight) || (dy < 0 && height >= collapsedHeight)) {
-                        scrollingListener?.invoke()
+                        collapsedParentLayout.verticalScrollingListener?.invoke()
                         val childHeight = getChildAt(0).height
                         parent.requestDisallowInterceptTouchEvent(true)
-                        //如果垂直滑动，但layoutManager不是月视图layoutManager,则切换
-                        if (((getChildAt(0) as RecyclerView).layoutManager is WeeklyViewLayoutManager) && totalDy.absoluteValue > 60) {
-                            setMonthLayoutManager?.invoke()
-                        }
                         getChildAt(0).updateLayoutParams<MarginLayoutParams> {
                             this.height = childHeight + dy.toInt()
                             requestLayout()
@@ -151,7 +143,7 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
         ValueAnimator.ofInt(height, expandedHeight).apply {
             addUpdateListener {
                 getChildAt(0).updateLayoutParams<ViewGroup.LayoutParams> {
-                    height = it.animatedValue as Int
+                    this.height = it.animatedValue as Int
                     requestLayout()
                 }
             }
@@ -159,8 +151,7 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                 collapsedState = DateViewModel.CollapsedState.EXPAND
                 (getChildAt(0) as CollapsedRecycleView).collapsedState =
                     DateViewModel.CollapsedState.EXPAND
-                expandListener?.invoke()
-                getCollapseLayout(parent).expandListener?.invoke()
+                collapsedParentLayout.expandListener?.invoke()
                 isScrolling = false
             }
         }
@@ -177,14 +168,12 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
             collapsedState = DateViewModel.CollapsedState.COLLAPSED
             (getChildAt(0) as CollapsedRecycleView).collapsedState =
                 DateViewModel.CollapsedState.COLLAPSED
-            getCollapseLayout(parent).collapseListener?.invoke()
-            collapseListener?.invoke()
+            collapsedParentLayout.collapseListener?.invoke()
             isScrolling = false
         }
     }
 
-
-    private fun getCollapseLayout(parent: ViewParent): CollapseLayout {
-        return if (parent is CollapseLayout) parent else getCollapseLayout(parent.parent)
+    private fun getCollapseParentLayout(parent: ViewParent): CollapsedParentLayout {
+        return if (parent is CollapsedParentLayout) parent else getCollapseParentLayout(parent.parent)
     }
 }

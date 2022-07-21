@@ -11,23 +11,26 @@ import watermelon.tobe.viewmodel.DateViewModel
  * email : 1446157077@qq.com
  * date : 2022/7/14 20:14
  */
-class CollapseLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
-    private var lastY = 0f
-    private var lastX = 0f
-    private var totalDy = 0f
-    var isScrolling = false
+class CollapsedParentLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
-    private var screenHeight = 0
+    var screenHeight = 0
     var collapsedHeight = 0
     var expandedHeight = 0
+    var nestedChildHeight = 0
     var collapseListener: (() -> Unit)? = null
     var expandListener: (() -> Unit)? = null
+    var verticalScrollingListener: (() -> Unit)? = null
+
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         if (collapsedHeight == 0 && expandedHeight == 0) {
             screenHeight = measuredHeight
-            collapsedHeight = (screenHeight * 0.1f).toInt()
+            collapsedHeight = (screenHeight * 0.08f).toInt()
             expandedHeight = (screenHeight * 0.6f).toInt()
+            nestedChildHeight = 0
+            for (i in 0..4) {
+                nestedChildHeight += getChildAt(i).measuredHeight
+            }
         }
     }
 }

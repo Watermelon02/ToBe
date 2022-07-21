@@ -3,10 +3,13 @@ package watermelon.tobe.view
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewParent
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.viewmodel.DateViewModel
+import kotlin.math.absoluteValue
 
 /**
  * description ： 可以折叠展开的Rv,用于切换月视图和周视图，会向下的CollapseDayItem通知折叠状态的改变
@@ -19,6 +22,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
     var collapsedHeight = 0
     var expandedHeight = 0
     private var childRect = Rect()
+
     //上一个被选中的child
     private var lastChosenChild = -1
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
@@ -31,14 +35,11 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
                     }
                 }
             }
-            if (value == DateViewModel.CollapsedState.COLLAPSED) expandListener?.invoke() else if (value == DateViewModel.CollapsedState.EXPAND) collapseListener?.invoke()
             field = value
         }
-    var collapseListener: (() -> Unit)? = null
-    var expandListener: (() -> Unit)? = null
-    private var lastX = 0f
-    private var lastY = 0f
     private var totalDy = 0f
+    var setWeekLayoutManager: (() -> Unit)? = null
+    var setMonthLayoutManager: (() -> Unit)? = null
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
         val collapseLayout = getCollapseLayout(parent)
@@ -53,6 +54,14 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         collapsedState = (parent as InnerScrollLayout).collapsedState
         super.onLayout(changed, l, t, r, b)
+        if (layoutManager is GridLayoutManager && collapsedState == DateViewModel.CollapsedState.COLLAPSED) {
+            //如果水平滑动，但layoutManager不是周视图layoutManager,则切换
+            setWeekLayoutManager?.invoke()
+        }
+        //如果垂直滑动，但layoutManager不是月视图layoutManager,则切换
+        if (collapsedState == DateViewModel.CollapsedState.SCROLLING && (layoutManager is WeeklyViewLayoutManager) && b - t > collapsedHeight + 30) {
+            setMonthLayoutManager?.invoke()
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -64,7 +73,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
         lastChosenChild = -1
     }
 
-     override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
+    override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
         if (e.action == MotionEvent.ACTION_UP) {
             val y = e.rawY
             val x = e.rawX
@@ -86,7 +95,7 @@ class CollapsedRecycleView(context: Context, attrs: AttributeSet?) : RecyclerVie
     }
 
 
-    private fun getCollapseLayout(parent: ViewParent): CollapseLayout {
-        return if (parent is CollapseLayout) parent else getCollapseLayout(parent.parent)
+    private fun getCollapseLayout(parent: ViewParent): CollapsedParentLayout {
+        return if (parent is CollapsedParentLayout) parent else getCollapseLayout(parent.parent)
     }
 }

@@ -27,7 +27,7 @@ import java.util.*
 
 class DateActivity : BaseActivity() {
     private lateinit var viewModel: DateViewModel
-    private lateinit var binding: ActivityDateBinding
+    lateinit var binding: ActivityDateBinding
     private var yearTextWidth = 0
     private var isScrolling = false
     val addTodoBottomSheet by lazy {
@@ -56,6 +56,15 @@ class DateActivity : BaseActivity() {
                 DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0))
             activityDateViewAddButton.setOnClickListener {
                 addTodoBottomSheet.show(supportFragmentManager, "add_todo")
+            }
+            activityDateCollapseLayout.collapseListener = {
+                viewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
+            }
+            activityDateCollapseLayout.verticalScrollingListener = {
+                viewModel.emitCollapsedState(DateViewModel.CollapsedState.SCROLLING)
+            }
+            activityDateCollapseLayout.expandListener = {
+                viewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)
             }
             //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
             activityDateViewPagerMonth.registerOnPageChangeCallback(object :

@@ -10,12 +10,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import watermelon.tobe.databinding.FragmentMonthBinding
+import watermelon.tobe.ui.activity.DateActivity
 import watermelon.tobe.ui.adapter.DaysAdapter
 import watermelon.tobe.util.extension.safeLaunch
 import watermelon.tobe.view.MonthlyViewLayoutManager
 import watermelon.tobe.view.WeeklyViewLayoutManager
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.MonthFragmentViewModel
+import kotlin.math.absoluteValue
 
 /**
  * description ： TODO:类的作用
@@ -40,21 +42,12 @@ class MonthFragment(
             fragmentMonthRecyclerviewDay.recycledViewPool.setMaxRecycledViews(0, 50)
             fragmentMonthRecyclerviewDay.adapter =
                 DaysAdapter(dateViewModel.dayFragmentDays.value)
-            fragmentMonthInnerScrollLayout.collapseListener = {
-                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
-            }
-            fragmentMonthInnerScrollLayout.scrollingListener = {
-                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.SCROLLING)
-            }
-            fragmentMonthInnerScrollLayout.expandListener = {
-                dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)
-            }
-            fragmentMonthInnerScrollLayout.setMonthLayoutManager = {
+            binding.fragmentMonthRecyclerviewDay.setMonthLayoutManager = {
                 fragmentMonthRecyclerviewDay.layoutManager =
                     MonthlyViewLayoutManager(context, 7)
                 fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
             }
-            fragmentMonthInnerScrollLayout.setWeekLayoutManager = {
+            binding.fragmentMonthRecyclerviewDay.setWeekLayoutManager = {
                 fragmentMonthRecyclerviewDay.layoutManager =
                     WeeklyViewLayoutManager(
                         requireContext(),
