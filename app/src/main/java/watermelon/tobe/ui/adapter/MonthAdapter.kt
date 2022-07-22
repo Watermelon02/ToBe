@@ -1,12 +1,9 @@
 package watermelon.tobe.ui.adapter
 
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import kotlinx.coroutines.flow.StateFlow
-import watermelon.tobe.fragment.MonthFragment
-import watermelon.tobe.viewmodel.DateViewModel
+import watermelon.tobe.ui.fragment.MonthFragment
 import java.util.*
 
 /**

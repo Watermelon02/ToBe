@@ -1,4 +1,4 @@
-package watermelon.tobe.fragment
+package watermelon.tobe.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,14 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import watermelon.tobe.databinding.FragmentMonthBinding
-import watermelon.tobe.ui.activity.DateActivity
 import watermelon.tobe.ui.adapter.DaysAdapter
 import watermelon.tobe.util.extension.safeLaunch
 import watermelon.tobe.view.MonthlyViewLayoutManager
 import watermelon.tobe.view.WeeklyViewLayoutManager
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.MonthFragmentViewModel
-import kotlin.math.absoluteValue
 
 /**
  * description ： TODO:类的作用

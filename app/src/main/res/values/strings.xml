@@ -6,4 +6,10 @@
     <string name="content">Content</string>
     <string name="add_todo_hint2">内容</string>
     <string name="time">Time</string>
+    <string name="hint_account">请输入账号</string>
+    <string name="hint_login_password">请输入密码</string>
+    <string name="account">Account</string>
+    <string name="password">Password</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="Name">Name</string>
 </resources>

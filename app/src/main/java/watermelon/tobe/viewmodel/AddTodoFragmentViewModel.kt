@@ -3,6 +3,7 @@ package watermelon.tobe.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import watermelon.tobe.repo.repository.TodoRepository
 import watermelon.tobe.util.local.DateCalculator
@@ -18,6 +19,7 @@ class AddTodoFragmentViewModel: ViewModel() {
     var day = 0
     var title = ""
     var content=""
+    val isShowing = MutableStateFlow(false)
 
     fun addTodo() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -28,6 +30,12 @@ class AddTodoFragmentViewModel: ViewModel() {
             day = 0
             this@AddTodoFragmentViewModel.title = ""
             this@AddTodoFragmentViewModel.content=""
+        }
+    }
+
+    fun emitShowingState(boolean: Boolean){
+        viewModelScope.launch {
+            isShowing.emit(boolean)
         }
     }
 }

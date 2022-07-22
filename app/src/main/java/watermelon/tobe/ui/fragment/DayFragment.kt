@@ -1,7 +1,8 @@
-package watermelon.tobe.fragment
+package watermelon.tobe.ui.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
-import watermelon.lightmusic.util.extension.toast
+import watermelon.tobe.util.extension.toast
 import watermelon.tobe.databinding.FragmentDayBinding
 import watermelon.tobe.ui.activity.DateActivity
 import watermelon.tobe.ui.adapter.TodoAdapter
@@ -34,6 +35,7 @@ class DayFragment(private val time: String) : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        dayFragmentViewModel.queryTodoList(time)
         binding =
             FragmentDayBinding.inflate(LayoutInflater.from(context), null, false)
         val dateActivityViewModel: DateViewModel =
@@ -80,10 +82,14 @@ class DayFragment(private val time: String) : Fragment() {
                 }
             }
         }
+        //当todoList刷新时，执行刷新动画
         viewLifecycleOwner.safeLaunch {
             dayFragmentViewModel.todoList.collectLatest {
-                (binding.fragmentDayTodoList.adapter as TodoAdapter).todoList = it
-                (binding.fragmentDayTodoList.adapter as TodoAdapter).notifyDataSetChanged()
+                binding.fragmentDayTodoList.animate().alpha(0f).withEndAction {
+                    (binding.fragmentDayTodoList.adapter as TodoAdapter).todoList = it
+                    (binding.fragmentDayTodoList.adapter as TodoAdapter).notifyDataSetChanged()
+                    binding.fragmentDayTodoList.animate().alpha(1f)
+                }
             }
         }
         viewLifecycleOwner.safeLaunch { //监听是否有新增Todo
@@ -92,10 +98,5 @@ class DayFragment(private val time: String) : Fragment() {
             }
         }
         return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-        dayFragmentViewModel.queryTodoList(time)
     }
 }

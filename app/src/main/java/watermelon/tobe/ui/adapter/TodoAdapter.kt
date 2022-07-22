@@ -1,11 +1,9 @@
 package watermelon.tobe.ui.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import watermelon.lightmusic.util.extension.toast
 import watermelon.tobe.databinding.ItemTodoBinding
 import watermelon.tobe.repo.bean.Todo
 import watermelon.tobe.viewmodel.DayFragmentViewModel

@@ -1,8 +1,6 @@
-package watermelon.tobe.fragment
+package watermelon.tobe.ui.fragment
 
 import android.os.Bundle
-import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,18 +9,19 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import watermelon.tobe.databinding.FragmentAddTodoBinding
 import watermelon.tobe.ui.adapter.AddTodoTimeAdapter
+import watermelon.tobe.viewmodel.AddTodoFragmentViewModel
 import watermelon.tobe.viewmodel.DateViewModel
-import watermelon.tobe.viewmodel.UpdateTodoFragmentViewModel
 import java.util.*
 
 /**
+ * description ： TODO:类的作用
  * author : Watermelon02
  * email : 1446157077@qq.com
- * date : 2022/7/21 17:13
+ * date : 2022/7/20 21:34
  */
-class UpdateDialogFragment: BottomSheetDialogFragment() {
+class AddTodoDialogFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentAddTodoBinding
-    private val updateTodoFragmentViewModel: UpdateTodoFragmentViewModel by lazy { ViewModelProvider(requireActivity())[UpdateTodoFragmentViewModel::class.java] }
+    private val addTodoFragmentViewModel: AddTodoFragmentViewModel by lazy { ViewModelProvider(requireActivity())[AddTodoFragmentViewModel::class.java] }
     private val dateActivityViewModel: DateViewModel by lazy { ViewModelProvider(requireActivity())[DateViewModel::class.java] }
 
     override fun onCreateView(
@@ -36,9 +35,9 @@ class UpdateDialogFragment: BottomSheetDialogFragment() {
             dismiss()
         }
         binding.fragmentAddTodoSubmit.setOnClickListener {
-            updateTodoFragmentViewModel.todo.title = binding.fragmentAddTodoTitleEdit.text.toString()
-            updateTodoFragmentViewModel.todo.content = binding.fragmentAddTodoContentEdit.text.toString()
-            updateTodoFragmentViewModel.updateTodo()
+            addTodoFragmentViewModel.title = binding.fragmentAddTodoTitleEdit.text.toString()
+            addTodoFragmentViewModel.content = binding.fragmentAddTodoContentEdit.text.toString()
+            addTodoFragmentViewModel.addTodo()
             dateActivityViewModel.emitTodoListChange()
             dismiss()
         }
@@ -53,7 +52,7 @@ class UpdateDialogFragment: BottomSheetDialogFragment() {
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                updateTodoFragmentViewModel.year = YEAR_LIST[position]
+                addTodoFragmentViewModel.year = YEAR_LIST[position]
             }
         })
         binding.fragmentAddTodoMonth.adapter = AddTodoTimeAdapter(MONTH_LIST)
@@ -62,7 +61,7 @@ class UpdateDialogFragment: BottomSheetDialogFragment() {
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                updateTodoFragmentViewModel.month = MONTH_LIST[position]
+                addTodoFragmentViewModel.month = MONTH_LIST[position]
             }
         })
         binding.fragmentAddTodoDay.adapter = AddTodoTimeAdapter(DAY_LIST)
@@ -71,18 +70,22 @@ class UpdateDialogFragment: BottomSheetDialogFragment() {
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                updateTodoFragmentViewModel.day = DAY_LIST[position]
+                addTodoFragmentViewModel.day = DAY_LIST[position]
             }
         })
+        val calendar = Calendar.getInstance()
+        if (addTodoFragmentViewModel.year == 0){//对时间初始化到当天
+            binding.fragmentAddTodoYear.currentItem = calendar[Calendar.YEAR] - YEAR_LIST[0]
+            binding.fragmentAddTodoMonth.currentItem = calendar[Calendar.MONTH] + 1 - MONTH_LIST[0]
+            binding.fragmentAddTodoDay.currentItem = calendar[Calendar.DATE] - DAY_LIST[0]
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        binding.fragmentAddTodoTitleEdit.text = Editable.Factory.getInstance().newEditable(updateTodoFragmentViewModel.todo.title)
-        binding.fragmentAddTodoContentEdit.text = Editable.Factory.getInstance().newEditable(updateTodoFragmentViewModel.todo.content)
-        binding.fragmentAddTodoYear.currentItem = updateTodoFragmentViewModel.year - YEAR_LIST[0]
-        binding.fragmentAddTodoMonth.currentItem = updateTodoFragmentViewModel.month - MONTH_LIST[0]
-        binding.fragmentAddTodoDay.currentItem = updateTodoFragmentViewModel.day - DAY_LIST[0]
+    override fun onDestroy() {
+        addTodoFragmentViewModel.title = binding.fragmentAddTodoTitleEdit.text.toString()
+        addTodoFragmentViewModel.content = binding.fragmentAddTodoContentEdit.text.toString()
+        super.onDestroy()
+        addTodoFragmentViewModel.emitShowingState(false)
     }
 
     companion object {

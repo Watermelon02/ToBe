@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp">
 
-        <com.google.android.material.card.MaterialCardView
+        <watermelon.tobe.view.ItemDragView
             android:id="@+id/item_todo_drag_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -45,7 +45,7 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/item_todo_title" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </watermelon.tobe.view.ItemDragView>
 
         <watermelon.tobe.view.ItemColorfulBackground
             android:id="@+id/item_todo_blue_button"
@@ -60,13 +60,7 @@
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeWidth="0dp">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </watermelon.tobe.view.ItemColorfulBackground>
+            app:strokeWidth="0dp"/>
 
         <watermelon.tobe.view.ItemColorfulBackground
             android:id="@+id/item_todo_red_button"

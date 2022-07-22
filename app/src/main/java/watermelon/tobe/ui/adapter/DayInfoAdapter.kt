@@ -3,7 +3,7 @@ package watermelon.tobe.ui.adapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import watermelon.tobe.fragment.DayFragment
+import watermelon.tobe.ui.fragment.DayFragment
 import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.ui.activity.DateActivity
 

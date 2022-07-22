@@ -4,7 +4,7 @@ import retrofit2.http.*
 import watermelon.tobe.repo.bean.TodoResponse
 import watermelon.tobe.repo.bean.LoginResponse
 import watermelon.tobe.repo.bean.QueryTodoResponse
-import watermelon.tobe.util.network.ToDoApiGenerator
+import watermelon.tobe.repo.network.ToDoApiGenerator
 
 /**
  * description ： Todo接口对应的Service
@@ -24,7 +24,7 @@ interface ToDoService {
         @Query("username") username: String,
         @Query("password") password: String,
         @Query(("repassword")) repassword: String
-    )
+    ):LoginResponse
 
     @GET("user/logout/json")
     suspend fun exit()
