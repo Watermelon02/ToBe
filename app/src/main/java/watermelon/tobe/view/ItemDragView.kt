@@ -9,6 +9,7 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginLeft
 import androidx.core.view.marginStart
 import com.google.android.material.card.MaterialCardView
+import kotlin.math.absoluteValue
 
 /**
  * description ： 可以拖动的item
@@ -38,19 +39,21 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
             MotionEvent.ACTION_MOVE -> {
                 val dy = ev.rawY - lastY
                 val dx = ev.rawX - lastX
-                if ((dx > 0 && totalDx + dx <= maxDx) || (dx < 0 && totalDx + dx >= 0f+marginLeft)) {
-                    x += dx
-                    totalDx += dx
-                    if (totalDx == maxDx) swipeListener?.invoke()
-                }
+                if (dx.absoluteValue > dy.absoluteValue) {
+                    if ((dx > 0 && totalDx + dx <= maxDx) || (dx < 0 && totalDx + dx >= 0f + marginLeft)) {
+                        x += dx
+                        totalDx += dx
+                        if (totalDx == maxDx) swipeListener?.invoke()
+                    }
+                } else parent.requestDisallowInterceptTouchEvent(false)
                 lastY = ev.rawY
                 lastX = ev.rawX
             }
             MotionEvent.ACTION_UP -> {
-                if (totalDx > maxDx/2 ){
+                if (totalDx > maxDx / 2) {
                     animate().x(maxDx)
                     swipeListener?.invoke()
-                }else animate().x(0f+marginLeft)
+                } else animate().x(0f + marginLeft)
                 parent.requestDisallowInterceptTouchEvent(false)
                 totalDx = 0f
             }

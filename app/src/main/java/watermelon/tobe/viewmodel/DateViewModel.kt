@@ -3,6 +3,7 @@ package watermelon.tobe.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import watermelon.tobe.repo.bean.Day
@@ -31,6 +32,7 @@ class DateViewModel : ViewModel() {
 
     fun emitTodoListChange(){
         viewModelScope.launch(Dispatchers.IO) {
+            delay(10)
             isTodoListChange.emit(System.currentTimeMillis())
         }
     }

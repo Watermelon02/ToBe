@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="20dp"
-            android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
             app:cardBackgroundColor="#F4F4F4"
             app:cardCornerRadius="20dp">
 
@@ -65,12 +66,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:fontFamily="@font/store_my_stamp_number"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/fragment_day_info_card">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/fragment_day_todo_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    /></watermelon.tobe.view.InnerRecyclerView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/fragment_day_todo_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="top"/>
+                </watermelon.tobe.view.InnerRecyclerView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

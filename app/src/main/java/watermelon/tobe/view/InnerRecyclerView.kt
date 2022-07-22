@@ -8,16 +8,18 @@ import android.view.ViewParent
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.LinearLayout.VERTICAL
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import watermelon.tobe.ui.adapter.TodoAdapter
 import kotlin.math.absoluteValue
 
 /**
- * description ： TODO:类的作用
+ * description ： 解决嵌套滑动的布局
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/22 09:42
  */
-class InnerRecyclerView(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
+class InnerRecyclerView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     private var lastX = 0f
     private var lastY = 0f
     private var interceptX = 0f
@@ -37,17 +39,22 @@ class InnerRecyclerView(context: Context, attrs: AttributeSet?) : FrameLayout(co
                     scrollDirection =
                         if (dy.absoluteValue > dx.absoluteValue) LinearLayout.VERTICAL else LinearLayout.HORIZONTAL
                 }
-                if (scrollDirection == VERTICAL){
+                if (scrollDirection == VERTICAL) {
                     if (dy.absoluteValue > dx.absoluteValue) {
-                        if ((getChildAt(0).canScrollVertically(1) && dy < 0) || (getChildAt(0).canScrollVertically(-1) && dy > 0)
+                        val scrollToBottom =
+                            ((getChildAt(0) as RecyclerView).adapter as TodoAdapter).todoList.size ==
+                                    ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+                        val scrollToTop = 0 == ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+                        Log.d("testTag", "(InnerRecyclerView.kt:48) -> ${scrollToTop},${scrollToBottom}")
+                        if ((!scrollToBottom && dy < 0) || (!scrollToTop && dy > 0)
                         ) {
                             parent.requestDisallowInterceptTouchEvent(true)
                             getCollapseViewPagerLayout(parent).innerScroll = true
-                        }else {
+                        } else {
                             parent.requestDisallowInterceptTouchEvent(false)
                             getCollapseViewPagerLayout(parent).innerScroll = false
                         }
-                    }else{
+                    } else {
                         parent.requestDisallowInterceptTouchEvent(false)
                         getCollapseViewPagerLayout(parent).innerScroll = false
                     }
@@ -55,13 +62,18 @@ class InnerRecyclerView(context: Context, attrs: AttributeSet?) : FrameLayout(co
                 lastX = ev.rawX
                 lastY = ev.rawY
             }
-            else->{
+            else -> {
                 parent.requestDisallowInterceptTouchEvent(false)
                 getCollapseViewPagerLayout(parent).innerScroll = false
                 scrollDirection = -1
             }
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        if (ev?.action == MotionEvent.ACTION_DOWN) return false
+        return super.onInterceptTouchEvent(ev)
     }
 
     private fun getCollapseViewPagerLayout(parent: ViewParent): CollapsedViewPagerLayout {

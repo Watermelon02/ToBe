@@ -18,6 +18,7 @@ import watermelon.tobe.util.extension.safeLaunch
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.DayFragmentViewModel
 import watermelon.tobe.viewmodel.UpdateTodoFragmentViewModel
+import watermelon.tobe.viewmodel.UserViewModel
 
 /**
  * description ： TODO:类的作用
@@ -29,6 +30,9 @@ class DayFragment(private val time: String) : Fragment() {
     @SuppressLint("SetTextI18n")
     private lateinit var binding: FragmentDayBinding
     private val dayFragmentViewModel: DayFragmentViewModel by lazy { ViewModelProvider(this)[DayFragmentViewModel::class.java] }
+
+    //当网络连接失败导致登录失败时，设置为true
+    private var connectFailure = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,9 +63,9 @@ class DayFragment(private val time: String) : Fragment() {
                     parentFragmentManager,
                     "up_date"
                 )
-            }else if (it.title == "Empty"){
+            } else if (it.title == "Empty") {
                 toast("没有Todo,无法修改TvT")
-            }else if (it.title == "Loading"){
+            } else if (it.title == "Loading") {
                 toast("加载中，请稍后~~")
             }
         }
@@ -95,6 +99,17 @@ class DayFragment(private val time: String) : Fragment() {
         viewLifecycleOwner.safeLaunch { //监听是否有新增Todo
             dateActivityViewModel.isTodoListChange.collectLatest {
                 dayFragmentViewModel.queryTodoList(time)
+            }
+        }
+        viewLifecycleOwner.safeLaunch {
+            ViewModelProvider(requireActivity())[UserViewModel::class.java].user.collectLatest {
+                if (it?.errorCode != 0) {
+                    connectFailure = true
+                } else if (connectFailure && it.errorCode == 0) {
+                    //如果连接失败后，又再次登录成功，则发起网络请求
+                    dayFragmentViewModel.queryTodoList(time)
+                }
+
             }
         }
         return binding.root

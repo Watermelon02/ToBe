@@ -78,9 +78,9 @@ class DateActivity : BaseActivity() {
                 dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.EXPAND)
             }
             activityDateImgUser.setOnClickListener {
-                if (UserRepository.user.value!=null){
+                if (UserRepository.user.value != null) {
                     UserFragment().show(supportFragmentManager, FRAGMENT_USER)
-                }else{
+                } else {
                     LoginFragment().show(supportFragmentManager, FRAGMENT_LOGIN)
                 }
                 userViewModel.emitShowState(true)
@@ -153,13 +153,12 @@ class DateActivity : BaseActivity() {
             safeLaunch {
                 dateViewModel.dayFragmentDays.collectLatest {
                     if (it.size > 1) {//在初始化flow的时候会发送一个listOf("")，需要排除这种情况
-                        val diffResult = DiffUtil.calculateDiff(
-                            DayInfoAdapter.NoteDiffUtil(
+                        DiffUtil.calculateDiff(
+                            DayInfoAdapter.DayDiffUtil(
                                 (activityDateViewPagerDay.adapter as DayInfoAdapter).days,
                                 it
                             )
-                        )
-                        diffResult.dispatchUpdatesTo(activityDateViewPagerDay.adapter as DayInfoAdapter)
+                        ).dispatchUpdatesTo(activityDateViewPagerDay.adapter as DayInfoAdapter)
                         (activityDateViewPagerDay.adapter as DayInfoAdapter).days = it
                     }
                 }

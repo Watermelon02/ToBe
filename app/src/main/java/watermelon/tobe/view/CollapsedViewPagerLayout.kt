@@ -16,7 +16,7 @@ import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
 
 /**
- * description ： TODO:类的作用
+ * description ： 解决嵌套滑动的布局
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/21 19:10
@@ -81,18 +81,18 @@ class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
                 lastX = ev.rawX
             }
             else -> {
-                if (scrollDirection == VERTICAL) {
-                    if (totalDy > 0) {//展开中
-                        if (totalDy > (expandedHeight - collapsedHeight) * 0.5) {
-                            generateExpandAnimator().start()
-                        } else {
+                if (scrollDirection == VERTICAL&& !innerScroll) {
+                    if (height > 0) {//展开中
+                        if (getInnerScrollLayout(dayFragmentVp)!!.getChildAt(0).height > (expandedHeight - collapsedHeight) * 0.5) {
                             generateCollapseAnimator().start()
+                        } else {
+                            generateExpandAnimator().start()
                         }
                     } else {//收缩中
-                        if (totalDy.absoluteValue < (expandedHeight - collapsedHeight) * 0.5) {
-                            generateExpandAnimator().start()
-                        } else {
+                        if (height < (expandedHeight - collapsedHeight) * 0.5) {
                             generateCollapseAnimator().start()
+                        } else {
+                            generateExpandAnimator().start()
                         }
                     }
                 }
@@ -122,7 +122,7 @@ class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
         return super.onInterceptTouchEvent(ev)
     }
 
-    private fun generateExpandAnimator() =
+    private fun generateCollapseAnimator() =
         ValueAnimator.ofInt(
             getInnerScrollLayout(dayFragmentVp)!!.height,
             expandedHeight
@@ -144,7 +144,7 @@ class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
         }
 
 
-    private fun generateCollapseAnimator() = ValueAnimator.ofInt(
+    private fun generateExpandAnimator() = ValueAnimator.ofInt(
         getInnerScrollLayout(dayFragmentVp)!!.height,
         collapsedHeight
     ).apply {

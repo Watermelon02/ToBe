@@ -21,13 +21,12 @@ class DayInfoAdapter(dateActivity: DateActivity, var days:List<Day>) : FragmentS
     }
 
     /**
-     * description ： 用于DateActivity下方vp2的差分刷新，
-     * 直接adapter.notifyDataSetChanged()好像会因为FragmentStateAdapter缓存的原因而保留三个之前月份的Note
+     * description ： 用于DateActivity下方vp2的差分刷新
      * author : Watermelon02
      * email : 1446157077@qq.com
      * date : 2022/7/14 19:30
      */
-    class NoteDiffUtil(private val oldDay: List<Day>, private val newDay: List<Day>) :
+    class DayDiffUtil(private val oldDay: List<Day>, private val newDay: List<Day>) :
         DiffUtil.Callback() {
         override fun getOldListSize(): Int {
             return oldDay.size
