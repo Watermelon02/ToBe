@@ -9,6 +9,7 @@
         <entry key="app/src/main/res/drawable/ic_cancel.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_list.xml" value="0.123" />
+        <entry key="app/src/main/res/drawable/ic_logo.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_submit.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_user.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_user_circle.xml" value="0.123" />
@@ -27,6 +28,8 @@
         <entry key="app/src/main/res/layout/item_time_slot.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_todo.xml" value="0.21690521240234378" />
         <entry key="app/src/main/res/layout/test.xml" value="0.1765625" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_background_round.xml" value="0.123" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.123" />
       </map>
     </option>
   </component>
