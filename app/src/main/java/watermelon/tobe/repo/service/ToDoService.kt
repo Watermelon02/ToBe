@@ -49,6 +49,7 @@ interface ToDoService {
         @Query("type") type: Long,
         @Query("priority") priority: Int = 0,
         @Query("status") status: Int,
+        @Query("date") dateStr: String
     ): TodoResponse
 
     @POST("lg/todo/delete/{id}/json")

@@ -45,7 +45,6 @@ class InnerRecyclerView(context: Context, attrs: AttributeSet?) : LinearLayout(c
                             ((getChildAt(0) as RecyclerView).adapter as TodoAdapter).todoList.size ==
                                     ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
                         val scrollToTop = 0 == ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
-                        Log.d("testTag", "(InnerRecyclerView.kt:48) -> ${scrollToTop},${scrollToBottom}")
                         if ((!scrollToBottom && dy < 0) || (!scrollToTop && dy > 0)
                         ) {
                             parent.requestDisallowInterceptTouchEvent(true)

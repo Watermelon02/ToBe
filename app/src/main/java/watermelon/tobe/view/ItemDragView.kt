@@ -22,7 +22,8 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
     private var lastY = 0f
     var totalDx = 0f
     private var lastX = 0f
-    var swipeListener: (() -> Unit)? = null
+    private var lastClickTime = 0L
+    var doubleClickListener: (() -> Unit)? = null
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         maxDx = marginEnd.toFloat()
@@ -33,6 +34,10 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
             MotionEvent.ACTION_DOWN -> {
                 lastY = ev.rawY
                 lastX = ev.rawX
+                if (System.currentTimeMillis() - lastClickTime<200){
+                    doubleClickListener?.invoke()
+                }
+                lastClickTime = System.currentTimeMillis()
                 parent.requestDisallowInterceptTouchEvent(true)
                 return true
             }
@@ -40,19 +45,19 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
                 val dy = ev.rawY - lastY
                 val dx = ev.rawX - lastX
                 if (dx.absoluteValue > dy.absoluteValue) {
-                    if ((dx > 0 && totalDx + dx <= maxDx) || (dx < 0 && totalDx + dx >= 0f + marginLeft)) {
+                    if ((dx > 0 && totalDx + dx > maxDx) || (dx < 0 && totalDx + dx < 0)) {
+                        parent.requestDisallowInterceptTouchEvent(false)
+                    }else if ((dx > 0 && totalDx + dx <= maxDx) || (dx < 0 && totalDx + dx >= 0f)) {
                         x += dx
                         totalDx += dx
-                        if (totalDx == maxDx) swipeListener?.invoke()
                     }
-                } else parent.requestDisallowInterceptTouchEvent(false)
+                }
                 lastY = ev.rawY
                 lastX = ev.rawX
             }
-            MotionEvent.ACTION_UP -> {
+            else -> {
                 if (totalDx > maxDx / 2) {
                     animate().x(maxDx)
-                    swipeListener?.invoke()
                 } else animate().x(0f + marginLeft)
                 parent.requestDisallowInterceptTouchEvent(false)
                 totalDx = 0f

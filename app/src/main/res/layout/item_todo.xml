@@ -20,20 +20,28 @@
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="0dp">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/item_todo_title"
-                    android:layout_width="200dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:fontFamily="@font/store_my_stamp_number"
                     android:text="title"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/item_todo_hour"
+                    android:layout_margin="10dp"
+                    android:fontFamily="@font/store_my_stamp_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <TextView
                     android:id="@+id/item_todo_content"
@@ -44,7 +52,7 @@
                     android:text="content"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/item_todo_title" />
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </watermelon.tobe.view.ItemDragView>
 
         <watermelon.tobe.view.ItemColorfulBackground

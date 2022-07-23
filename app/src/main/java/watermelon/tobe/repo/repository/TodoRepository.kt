@@ -16,10 +16,11 @@ import watermelon.tobe.util.local.DateCalculator
  */
 object TodoRepository {
     //远程数据获取到之前发送的假数据
-    private val loadingData = listOf(Todo(title = "Loading", content = "Todo正在飞速加载！"))
+    private val loadingData by lazy { listOf(Todo(title = "Loading", content = "Todo正在飞速加载！", priority = -1)) }
+
     //两端都没有Todo时发送的假数据
-    val emptyData = listOf(Todo(title = "Empty", content = "快来创建Todo吧！"))
-    val connectFailData = listOf(Todo(title = "Connect Fail", content = "网络连接失败，检查一下网络或者是否登录吧"))
+    val emptyData by lazy { listOf(Todo(title = "Empty", content = "快来创建Todo吧！", priority = -1)) }
+    val connectFailData by lazy { listOf(Todo(title = "Connect Fail", content = "网络连接失败，检查一下网络或者是否登录吧", priority = -1)) }
 
     suspend fun addTodo(title: String, content: String, date: String, priority: Int = 0) {
         val type = DateCalculator.formatDateForQueryHoliday(date).toLong()
@@ -41,12 +42,12 @@ object TodoRepository {
         content: String,
         dateStr: String,
         priority: Int = 0,
-        status: Int
+        status: Int,
     ) {
         val type = DateCalculator.formatDateForQueryHoliday(dateStr).toLong()
         try {
             val response =
-                ToDoService.INSTANCE.updateTodo(id, title, content, type, priority, status)
+                ToDoService.INSTANCE.updateTodo(id, title, content, type, priority, status,dateStr)
             if (response.errorCode == 0) {
                 TodoDatabase.getInstance().getTodoDao().insert(response.data)
             } else {
@@ -90,7 +91,12 @@ object TodoRepository {
         index: Int = 1
     ) {
         //根据status决定是去获取已经完成的、未完成的、还是所有的Todo
-        val remote = ToDoService.INSTANCE.queryTodoListAll(status=status, type = type, priority = priority, index =  index)
+        val remote = ToDoService.INSTANCE.queryTodoListAll(
+            status = status,
+            type = type,
+            priority = priority,
+            index = index
+        )
         //对远端数据和本地数据进行比较，根据结果决定是否发送数据
         if (remote.errorCode == 0) {
             if (remote.data.datas.size != local.size) {
@@ -112,9 +118,9 @@ object TodoRepository {
                 }
             }
         } else if (remote.errorCode == -1001) {//没有登录
-            if (UserRepository.tryLogin()){//登录成功,再次发送请求
+            if (UserRepository.tryLogin()) {//登录成功,再次发送请求
                 queryRemote(date, type, local, status, priority, index)
-            }else toast("没有登录")
+            } else toast("没有登录")
         } else {
             throw Exception(remote.errorMsg)
         }
@@ -122,7 +128,7 @@ object TodoRepository {
 
     //比对两端数据，将改变后的数据更新到数据库中
     private fun updateTodoList(remote: QueryTodoResponse, local: List<Todo>) {
-        if (remote.data.datas.isNotEmpty() && local.isNotEmpty()){
+        if (remote.data.datas.isNotEmpty() && local.isNotEmpty()) {
             for (i in 0..local.size) {
                 if (remote.data.datas[i] != local[i]) {
                     TodoDatabase.getInstance().getTodoDao().insert(remote.data.datas[i])

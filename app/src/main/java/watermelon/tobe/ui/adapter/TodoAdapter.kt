@@ -1,6 +1,7 @@
 package watermelon.tobe.ui.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -21,9 +22,7 @@ class TodoAdapter(
     val updateTodoListener: (todo: Todo) -> Unit
 ) :
     RecyclerView.Adapter<TodoAdapter.ViewHolder>() {
-    class ViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root) {
-        var isRemoved = false
-    }
+    class ViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(ItemTodoBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -31,28 +30,27 @@ class TodoAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.apply {
             itemTodoTitle.text = todoList[position].title
+            if (todoList[position].priority!=-1){
+                itemTodoHour.text ="(${todoList[position].priority}:00)"
+            }
             itemTodoContent.text = todoList[position].content
             itemTodoBlueButton.setColor(Color.BLUE)
             itemTodoRedButton.setColor(Color.RED)
             itemTodoRedButton.setOnClickListener {
                 viewModel.deleteTodo(todoList[position])
-                holder.isRemoved = true
             }
             itemTodoBlueButton.setOnClickListener {
+                itemTodoBlueButton.animate().alpha(0f).setDuration(400).withEndAction {
+                    itemTodoBlueButton.setColor(Color.GREEN)
+                    itemTodoBlueButton.animate().alpha(1f)
+                }
+                viewModel.finishTodo(todoList[position])
+            }
+            itemTodoDragView.doubleClickListener = {
                 updateTodoListener(todoList[position])
             }
         }
     }
-
-    /*override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        if (holder.isRemoved) {
-            holder.binding.root.animate().alpha(0f).withEndAction {
-                holder.binding.root.alpha = 1f
-                holder.isRemoved = false
-            }
-        }
-        super.onViewDetachedFromWindow(holder)
-    }*/
 
     override fun getItemCount(): Int = todoList.size
 

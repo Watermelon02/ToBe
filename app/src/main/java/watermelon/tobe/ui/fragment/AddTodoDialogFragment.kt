@@ -1,6 +1,7 @@
 package watermelon.tobe.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +10,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import watermelon.tobe.databinding.FragmentAddTodoBinding
 import watermelon.tobe.ui.adapter.AddTodoTimeAdapter
+import watermelon.tobe.ui.adapter.TimeSlotAdapter
 import watermelon.tobe.viewmodel.AddTodoFragmentViewModel
 import watermelon.tobe.viewmodel.DateViewModel
 import java.util.*
+import kotlin.math.absoluteValue
 
 /**
  * description ： TODO:类的作用
@@ -21,7 +24,11 @@ import java.util.*
  */
 class AddTodoDialogFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentAddTodoBinding
-    private val addTodoFragmentViewModel: AddTodoFragmentViewModel by lazy { ViewModelProvider(requireActivity())[AddTodoFragmentViewModel::class.java] }
+    private val addTodoFragmentViewModel: AddTodoFragmentViewModel by lazy {
+        ViewModelProvider(
+            requireActivity()
+        )[AddTodoFragmentViewModel::class.java]
+    }
     private val dateActivityViewModel: DateViewModel by lazy { ViewModelProvider(requireActivity())[DateViewModel::class.java] }
 
     override fun onCreateView(
@@ -74,11 +81,20 @@ class AddTodoDialogFragment : BottomSheetDialogFragment() {
             }
         })
         val calendar = Calendar.getInstance()
-        if (addTodoFragmentViewModel.year == 0){//对时间初始化到当天
+        if (addTodoFragmentViewModel.year == 0) {//对时间初始化到当天
             binding.fragmentAddTodoYear.currentItem = calendar[Calendar.YEAR] - YEAR_LIST[0]
             binding.fragmentAddTodoMonth.currentItem = calendar[Calendar.MONTH] + 1 - MONTH_LIST[0]
             binding.fragmentAddTodoDay.currentItem = calendar[Calendar.DATE] - DAY_LIST[0]
         }
+        binding.fragmentAddTodoHour.releaseListener = { degree ->
+            val hour = if (degree>0){
+                (degree/30).toInt()
+            }else{
+                12-(degree/30).toInt().absoluteValue
+            }
+            addTodoFragmentViewModel.hour = (TIME_SLOT_LIST[binding.fragmentAddTodoTime.currentItem]+hour)
+        }
+        binding.fragmentAddTodoTime.adapter = TimeSlotAdapter(TIME_SLOT_LIST)
     }
 
     override fun onDestroy() {
@@ -124,5 +140,6 @@ class AddTodoDialogFragment : BottomSheetDialogFragment() {
             30,
             31
         )
+        private val TIME_SLOT_LIST = listOf(0, 12)
     }
 }

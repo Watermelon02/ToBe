@@ -17,6 +17,7 @@ class AddTodoFragmentViewModel: ViewModel() {
     var year = 0
     var month = 0
     var day = 0
+    var hour = 0
     var title = ""
     var content=""
     val isShowing = MutableStateFlow(false)
@@ -24,7 +25,7 @@ class AddTodoFragmentViewModel: ViewModel() {
     fun addTodo() {
         viewModelScope.launch(Dispatchers.IO) {
             val date = DateCalculator.formatDateForLocalQueryHoliday("${year}-${month}-${day}")
-            TodoRepository.addTodo(title, content, date)
+            TodoRepository.addTodo(title, content, date, priority = hour)
             year = 0
             month = 0
             day = 0

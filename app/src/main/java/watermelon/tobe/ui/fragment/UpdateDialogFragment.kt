@@ -10,8 +10,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import watermelon.tobe.databinding.FragmentAddTodoBinding
 import watermelon.tobe.ui.adapter.AddTodoTimeAdapter
+import watermelon.tobe.ui.adapter.TimeSlotAdapter
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.UpdateTodoFragmentViewModel
+import java.util.*
+import kotlin.math.absoluteValue
 
 /**
  * author : Watermelon02
@@ -73,6 +76,23 @@ class UpdateDialogFragment: BottomSheetDialogFragment() {
                 updateTodoFragmentViewModel.day = DAY_LIST[position]
             }
         })
+        val hour = updateTodoFragmentViewModel.todo.priority
+        if (hour<=12){
+            binding.fragmentAddTodoHour.totalDegree = -hour*30f
+            binding.fragmentAddTodoTime.currentItem = 1
+        }else{
+            binding.fragmentAddTodoHour.totalDegree = -(hour-12)*30f
+            binding.fragmentAddTodoTime.currentItem = 0
+        }
+        binding.fragmentAddTodoHour.releaseListener = { degree ->
+            val hour = if (degree>0){
+                (degree/30).toInt()
+            }else{
+                12-(degree/30).toInt().absoluteValue
+            }
+            updateTodoFragmentViewModel.hour = (TIME_SLOT_LIST[binding.fragmentAddTodoTime.currentItem]+hour)
+        }
+        binding.fragmentAddTodoTime.adapter = TimeSlotAdapter(TIME_SLOT_LIST)
     }
 
     override fun onResume() {
@@ -120,5 +140,7 @@ class UpdateDialogFragment: BottomSheetDialogFragment() {
             30,
             31
         )
+        private val TIME_SLOT_LIST = listOf(0, 12)
+
     }
 }

@@ -18,6 +18,7 @@ class UpdateTodoFragmentViewModel : ViewModel() {
     var year = 0
     var month = 0
     var day = 0
+    var hour = 0
     fun updateTodo() {
         viewModelScope.launch(Dispatchers.IO) {
             TodoRepository.updateTodo(
@@ -25,8 +26,8 @@ class UpdateTodoFragmentViewModel : ViewModel() {
                 todo.title,
                 todo.content,
                 DateCalculator.formatDateForLocalQueryHoliday("${year}-${month}-${day}"),
-                todo.priority,
-                todo.status
+                hour,
+                todo.status,
             )
         }
     }

@@ -14,7 +14,7 @@
         <entry key="app/src/main/res/drawable/ic_user_circle.xml" value="0.123" />
         <entry key="app/src/main/res/layout/activity_date.xml" value="0.2844502766927083" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.15520833333333334" />
-        <entry key="app/src/main/res/layout/fragment_add_todo.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_add_todo.xml" value="0.2575241088867188" />
         <entry key="app/src/main/res/layout/fragment_day.xml" value="0.27726643880208335" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.21770833333333334" />
         <entry key="app/src/main/res/layout/fragment_month.xml" value="0.23177083333333334" />
@@ -24,6 +24,7 @@
         <entry key="app/src/main/res/layout/fragment_user.xml" value="0.23072916666666668" />
         <entry key="app/src/main/res/layout/item_add_todo.xml" value="0.23177083333333334" />
         <entry key="app/src/main/res/layout/item_day.xml" value="0.2015625" />
+        <entry key="app/src/main/res/layout/item_time_slot.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_todo.xml" value="0.21690521240234378" />
         <entry key="app/src/main/res/layout/test.xml" value="0.1765625" />
       </map>
