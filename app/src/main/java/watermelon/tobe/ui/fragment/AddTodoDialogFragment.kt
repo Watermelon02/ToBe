@@ -9,8 +9,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import watermelon.tobe.databinding.FragmentAddTodoBinding
+import watermelon.tobe.service.aidl.Todo
 import watermelon.tobe.ui.adapter.AddTodoTimeAdapter
 import watermelon.tobe.ui.adapter.TimeSlotAdapter
+import watermelon.tobe.util.local.DateCalculator
 import watermelon.tobe.viewmodel.AddTodoFragmentViewModel
 import watermelon.tobe.viewmodel.DateViewModel
 import java.util.*
@@ -80,7 +82,7 @@ class AddTodoDialogFragment : BottomSheetDialogFragment() {
                 addTodoFragmentViewModel.day = DAY_LIST[position]
             }
         })
-        val calendar = Calendar.getInstance()
+        val calendar = DateCalculator.todayCalendar
         if (addTodoFragmentViewModel.year == 0) {//对时间初始化到当天
             binding.fragmentAddTodoYear.currentItem = calendar[Calendar.YEAR] - YEAR_LIST[0]
             binding.fragmentAddTodoMonth.currentItem = calendar[Calendar.MONTH] + 1 - MONTH_LIST[0]

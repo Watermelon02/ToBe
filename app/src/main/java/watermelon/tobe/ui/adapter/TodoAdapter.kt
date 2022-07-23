@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.databinding.ItemTodoBinding
 import watermelon.tobe.repo.bean.Day
-import watermelon.tobe.repo.bean.Todo
+import watermelon.tobe.service.aidl.Todo
 import watermelon.tobe.viewmodel.DayFragmentViewModel
 
 /**
@@ -38,6 +38,7 @@ class TodoAdapter(
             itemTodoRedButton.setColor(Color.RED)
             itemTodoRedButton.setOnClickListener {
                 viewModel.deleteTodo(todoList[position])
+
             }
             itemTodoBlueButton.setOnClickListener {
                 itemTodoBlueButton.animate().alpha(0f).setDuration(400).withEndAction {

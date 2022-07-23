@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import watermelon.tobe.repo.bean.Todo
 import watermelon.tobe.repo.repository.TodoRepository
+import watermelon.tobe.service.aidl.Todo
 import watermelon.tobe.util.local.DateCalculator
 
 /**

@@ -1,7 +1,7 @@
 package watermelon.tobe.repo.database
 
 import androidx.room.*
-import watermelon.tobe.repo.bean.Todo
+import watermelon.tobe.service.aidl.Todo
 
 /**
  * author : Watermelon02

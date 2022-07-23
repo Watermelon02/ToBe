@@ -1,19 +1,14 @@
-/*
-package watermelon.tobe.repo.bean
-
+package watermelon.tobe.service.aidl
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-*/
 /**
- * description ： TODO:类的作用
  * author : Watermelon02
  * email : 1446157077@qq.com
  * date : 2022/7/19 10:30
- *//*
-
+ */
 @Entity
 data class Todo(
     val completeDate: String = "",
@@ -71,4 +66,14 @@ data class Todo(
             return arrayOfNulls(size)
         }
     }
-}*/
+
+    /*fun convertTodoList(parcelList:List<watermelon.tobe.repo.bean.Todo>): List<Todo> {
+        val arrayList = arrayListOf<Todo>()
+        val parcel = Parcel.obtain()
+        for (i in parcelList.indices){
+            parcelList[i].writeToParcel(parcel,0)
+            arrayList.add(Todo.createFromParcel(parcel))
+        }
+        return arrayList.toList()
+    }*/
+}

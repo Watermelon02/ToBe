@@ -1,5 +1,7 @@
 package watermelon.tobe.repo.bean
 
+import watermelon.tobe.service.aidl.Todo
+
 data class QueryTodoResponse(
     val `data`: Data,
     val errorCode: Int,

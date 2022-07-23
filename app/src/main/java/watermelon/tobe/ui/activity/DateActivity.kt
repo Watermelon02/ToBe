@@ -1,7 +1,13 @@
 package watermelon.tobe.ui.activity
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
@@ -11,11 +17,15 @@ import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.flow.collectLatest
 import watermelon.lightmusic.base.BaseActivity
 import watermelon.tobe.R
+import watermelon.tobe.base.BaseApp
 import watermelon.tobe.base.FRAGMENT_ADD_TODO
 import watermelon.tobe.base.FRAGMENT_LOGIN
 import watermelon.tobe.base.FRAGMENT_USER
 import watermelon.tobe.databinding.ActivityDateBinding
 import watermelon.tobe.repo.repository.UserRepository
+import watermelon.tobe.service.TodoManagerService
+//import watermelon.tobe.service.TodoManagerService
+import watermelon.tobe.service.aidl.TodoManager
 import watermelon.tobe.ui.fragment.AddTodoDialogFragment
 import watermelon.tobe.ui.fragment.UserFragment
 import watermelon.tobe.ui.fragment.UpdateDialogFragment
@@ -92,7 +102,7 @@ class DateActivity : BaseActivity() {
                 override fun onPageScrolled(
                     position: Int,
                     positionOffset: Float,
-                    positionOffsetPixels: Int
+                    positionOffsetPixels: Int,
                 ) {
                     //1为RightToLeft,0为LeftToRight
                     val direction = if (lastPosition == position) 0 else 1
@@ -128,6 +138,7 @@ class DateActivity : BaseActivity() {
                     lastPosition = position
                 }
             })
+            bindTodoManagerService()
             safeLaunch {//初始化,让上方vp到中间当前月份
                 //初始化下方vp的数据
                 dateViewModel.emitDays("${dateViewModel.currentYear}-${dateViewModel.currentMonth}")
@@ -184,6 +195,23 @@ class DateActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    //绑定启动TodoManagerService
+    private fun bindTodoManagerService() {
+        val todoManagerServiceConnection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                BaseApp.todoManagerBinder = TodoManager.Stub.asInterface(service)
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {}
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            bindService(Intent(this@DateActivity, TodoManagerService::class.java),
+                todoManagerServiceConnection,
+                Context.BIND_AUTO_CREATE)
+        }
+        
     }
 
     /**通过动画让年份切换到上一年*/

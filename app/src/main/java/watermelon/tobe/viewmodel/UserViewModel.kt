@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import watermelon.tobe.base.BaseApp
 import watermelon.tobe.repo.repository.UserRepository
 import watermelon.tobe.repo.service.ToDoService
 
@@ -19,6 +20,7 @@ class UserViewModel : ViewModel() {
     fun login(userName: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             UserRepository.login(userName, password)
+            BaseApp.todoManagerBinder?.login()
         }
     }
 
@@ -26,6 +28,7 @@ class UserViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             ToDoService.INSTANCE.exit()
             user.emit(null)
+            BaseApp.todoManagerBinder?.exit()
         }
     }
 

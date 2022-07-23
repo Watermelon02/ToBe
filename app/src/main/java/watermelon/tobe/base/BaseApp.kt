@@ -7,6 +7,7 @@ import watermelon.lightmusic.util.network.DateApiGenerator
 import watermelon.tobe.repo.database.DayDatabase
 import watermelon.tobe.repo.database.TodoDatabase
 import watermelon.tobe.repo.network.ToDoApiGenerator
+import watermelon.tobe.service.aidl.TodoManager
 
 /**
  * description ： TODO:类的作用
@@ -18,6 +19,7 @@ class BaseApp: Application() {
     companion object {
         lateinit var appContext: Context
             private set
+        var todoManagerBinder:TodoManager? = null
     }
     override fun onCreate() {
         super.onCreate()

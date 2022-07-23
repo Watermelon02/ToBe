@@ -4,9 +4,9 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import watermelon.tobe.util.extension.toast
 import watermelon.tobe.repo.bean.QueryTodoResponse
-import watermelon.tobe.repo.bean.Todo
 import watermelon.tobe.repo.database.TodoDatabase
 import watermelon.tobe.repo.service.ToDoService
+import watermelon.tobe.service.aidl.Todo
 import watermelon.tobe.util.local.DateCalculator
 
 /**
@@ -16,7 +16,7 @@ import watermelon.tobe.util.local.DateCalculator
  */
 object TodoRepository {
     //远程数据获取到之前发送的假数据
-    private val loadingData by lazy { listOf(Todo(title = "Loading", content = "Todo正在飞速加载！", priority = -1)) }
+    val loadingData by lazy { listOf(Todo(title = "Loading", content = "Todo正在飞速加载！", priority = -1)) }
 
     //两端都没有Todo时发送的假数据
     val emptyData by lazy { listOf(Todo(title = "Empty", content = "快来创建Todo吧！", priority = -1)) }
@@ -82,7 +82,7 @@ object TodoRepository {
             }
         }
 
-    private suspend fun FlowCollector<List<Todo>>.queryRemote(
+    suspend fun FlowCollector<List<Todo>>.queryRemote(
         date: String,
         type: Long,
         local: List<Todo>,

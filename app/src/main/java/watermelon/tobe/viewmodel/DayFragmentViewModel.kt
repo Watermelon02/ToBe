@@ -1,5 +1,6 @@
 package watermelon.tobe.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -9,8 +10,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import watermelon.tobe.repo.bean.Todo
+import watermelon.tobe.base.BaseApp
 import watermelon.tobe.repo.repository.TodoRepository
+import watermelon.tobe.service.aidl.Todo
+import watermelon.tobe.util.local.DateCalculator
 
 /**
  * author : Watermelon02
@@ -31,6 +34,8 @@ class DayFragmentViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             if (todo.priority!=-1){//用if排除Empty,Connect Fail,Loading状态的T odo
                 TodoRepository.deleteTodo(todo)
+                //如果是删除的本日todo,通过binder通知TodoManagerService
+                if (todo.dateStr == DateCalculator.todayDate) BaseApp.todoManagerBinder?.deleteTodo(todo)
                 todoList.update {
                     for (i in 0..it.size) {
                         if (it[i] == todo) return@update it.subList(0, i) + it.subList(i + 1, it.size)
@@ -53,6 +58,10 @@ class DayFragmentViewModel : ViewModel() {
                     priority = todo.priority,
                     status = 1
                 )
+                //如果是完成的本日todo,通过binder通知TodoManagerService
+                if (todo.dateStr == DateCalculator.todayDate) {
+                    BaseApp.todoManagerBinder?.deleteTodo(todo)
+                }
                 delay(10)
                 TodoRepository.queryTodoList(date = todo.dateStr, status = 0).collectLatest {
                     todoList.emit(it)

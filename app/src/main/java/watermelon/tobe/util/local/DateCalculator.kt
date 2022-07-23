@@ -1,7 +1,5 @@
 package watermelon.tobe.util.local
 
-import android.annotation.SuppressLint
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import watermelon.tobe.repo.bean.Day
 import java.util.*
@@ -15,14 +13,18 @@ import java.util.*
 object DateCalculator {
     //MonthFragment上方vp会显示的月份数量
     const val TOTAL_MONTH = 25
-    val calendar2 = Calendar.getInstance()
-
+    private val calendar: Calendar = Calendar.getInstance()
+    //当前日期
+    val todayCalendar: Calendar = Calendar.getInstance()
+    val todayDate by lazy {
+        DateCalculator.formatDateForLocalQueryHoliday("${todayCalendar[Calendar.YEAR]}-${todayCalendar[Calendar.MONTH] + 1}-${todayCalendar[Calendar.DATE]}")
+    }
     //被点击选中的日期
-    var lastYear = calendar2[Calendar.YEAR]
-    var lastMonth = calendar2[Calendar.MONTH] + 1
-    var lastDay = calendar2[Calendar.DATE]
+    var lastYear = calendar[Calendar.YEAR]
+    var lastMonth = calendar[Calendar.MONTH] + 1
+    var lastDay = calendar[Calendar.DATE]
     val currentDate =
-        MutableStateFlow("${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH] + 1}-${calendar2[Calendar.DATE]}")
+        MutableStateFlow("${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] + 1}-${calendar[Calendar.DATE]}")
 
     /**@param diff 要计算的月份与当前月份的差
      * @return 获取到目标月份的日期格式字符串ArrayList*/
@@ -38,7 +40,7 @@ object DateCalculator {
         for (i in 1..calendar[Calendar.DATE]) {
             val date = "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] + 1}-$i"
             calendar[Calendar.DATE] = i
-            mDays.add(Day(date = date, weekDay = calendar[Calendar.DAY_OF_WEEK]-1))
+            mDays.add(Day(date = date, weekDay = calendar[Calendar.DAY_OF_WEEK] - 1))
         }
         return mDays
     }
@@ -47,12 +49,12 @@ object DateCalculator {
      * @return 当前月份每天以yy-MM-DD的String存储的Arraylist*/
     fun getDays(diff: Int): ArrayList<Day> {
         val mDays = ArrayList<Day>()
-        calendar2.add(Calendar.MONTH, diff)
-        calendar2[Calendar.DATE] = 1 //把日期设置为当月第一天
-        calendar2.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
+        calendar.add(Calendar.MONTH, diff)
+        calendar[Calendar.DATE] = 1 //把日期设置为当月第一天
+        calendar.roll(Calendar.DATE, -1) //日期回滚一天，也就是最后一天
 
-        for (i in 1..calendar2[Calendar.DATE]) {
-            val date = "${calendar2[Calendar.YEAR]}-${calendar2[Calendar.MONTH] + 1}-$i"
+        for (i in 1..calendar[Calendar.DATE]) {
+            val date = "${calendar[Calendar.YEAR]}-${calendar[Calendar.MONTH] + 1}-$i"
             mDays.add(Day(date = date))
         }
         return mDays

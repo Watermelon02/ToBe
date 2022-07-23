@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import watermelon.tobe.repo.bean.Todo
+import watermelon.tobe.service.aidl.Todo
 
 /**
  * author : Watermelon02
