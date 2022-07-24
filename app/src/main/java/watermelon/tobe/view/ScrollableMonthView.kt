@@ -28,7 +28,7 @@ class ScrollableMonthView(context: Context, attrs: AttributeSet?) :
     private val rect = Rect()
     private var translateX = 0f
 
-    private val monthList = arrayListOf(
+    private var monthList = arrayListOf(
         Month(Calendar.getInstance()[Calendar.MONTH]),
         Month(Calendar.getInstance()[Calendar.MONTH] + 1),
         Month(Calendar.getInstance()[Calendar.MONTH] + 2)
@@ -108,6 +108,17 @@ class ScrollableMonthView(context: Context, attrs: AttributeSet?) :
         this.direction = direction
         translateX = (4f * rect.width()) * (position + offset)
         invalidate()
+    }
+
+    fun resetToCurrentMonth(){
+        animate().alpha(0f).withEndAction {
+            monthList = arrayListOf(
+                Month(Calendar.getInstance()[Calendar.MONTH]),
+                Month(Calendar.getInstance()[Calendar.MONTH] + 1),
+                Month(Calendar.getInstance()[Calendar.MONTH] + 2)
+            )
+            animate().alpha(1f)
+        }
     }
 
     inner class Month(var month: Int = 0, var x: Float = 0f)

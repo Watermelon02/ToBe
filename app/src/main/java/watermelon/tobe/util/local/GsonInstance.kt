@@ -1,8 +1,7 @@
-package watermelon.lightmusic.util.local
+package watermelon.tobe.util.local
 
 import com.google.gson.Gson
-import watermelon.lightmusic.util.local.GsonInstance
 
 object GsonInstance {
-    val instance = Gson()
+    val INSTANCE by lazy { Gson() }
 }

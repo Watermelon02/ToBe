@@ -15,6 +15,7 @@ import watermelon.tobe.databinding.FragmentDayBinding
 import watermelon.tobe.ui.activity.DateActivity
 import watermelon.tobe.ui.adapter.TodoAdapter
 import watermelon.tobe.util.extension.safeLaunch
+import watermelon.tobe.util.local.DateCalculator
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.DayFragmentViewModel
 import watermelon.tobe.viewmodel.UpdateTodoFragmentViewModel
@@ -113,5 +114,10 @@ class DayFragment(private val time: String) : Fragment() {
             }
         }
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        DateCalculator.currentDate.value = time
     }
 }

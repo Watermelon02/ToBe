@@ -23,8 +23,8 @@ import kotlin.math.absoluteValue
  */
 class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
     LinearLayout(context, attrs) {
-    private var collapsedHeight = 0
-    private var expandedHeight = 0
+    internal var collapsedHeight = 0
+    internal var expandedHeight = 0
     private var lastY = 0f
     private var lastX = 0f
     private var totalDy = 0f
@@ -38,7 +38,7 @@ class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
         )
     }
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
-    private val dayFragmentVp: ViewGroup by lazy { (parent as ViewGroup).getChildAt(5) as ViewGroup }
+    internal val dayFragmentVp: ViewGroup by lazy { (parent as ViewGroup).getChildAt(5) as ViewGroup }
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         collapsedHeight = collapsedParentLayout.collapsedHeight
@@ -122,7 +122,7 @@ class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
         return super.onInterceptTouchEvent(ev)
     }
 
-    private fun generateCollapseAnimator() =
+    internal fun generateCollapseAnimator() =
         ValueAnimator.ofInt(
             getInnerScrollLayout(dayFragmentVp)!!.height,
             expandedHeight
@@ -144,7 +144,7 @@ class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
         }
 
 
-    private fun generateExpandAnimator() = ValueAnimator.ofInt(
+    internal fun generateExpandAnimator() = ValueAnimator.ofInt(
         getInnerScrollLayout(dayFragmentVp)!!.height,
         collapsedHeight
     ).apply {
@@ -168,7 +168,7 @@ class CollapsedViewPagerLayout(context: Context, attrs: AttributeSet?) :
         return if (parent is CollapsedParentLayout) parent else getCollapseParentLayout(parent.parent)
     }
 
-    private fun getInnerScrollLayout(child: ViewGroup): InnerScrollLayout? {
+    internal fun getInnerScrollLayout(child: ViewGroup): InnerScrollLayout? {
         if (child is InnerScrollLayout) return child
         var innerScrollLayout: InnerScrollLayout? = null
         for (i in 0 until child.childCount) {

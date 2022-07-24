@@ -2,6 +2,7 @@ package watermelon.tobe.repo.bean
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import watermelon.tobe.service.aidl.Todo
 
 /**
  * author : Watermelon02
@@ -25,5 +26,6 @@ class Day(
     val typeDes: String="",
     val weekDay: Int=0,
     val weekOfYear: Int=0,
-    val yearTips: String=""
+    val yearTips: String="",
+    var todo:List<Todo> = listOf()
 )

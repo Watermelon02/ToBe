@@ -45,12 +45,13 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
                 val dy = ev.rawY - lastY
                 val dx = ev.rawX - lastX
                 if (dx.absoluteValue > dy.absoluteValue) {
-                    if ((dx > 0 && totalDx + dx > maxDx) || (dx < 0 && totalDx + dx < 0)) {
-                        parent.requestDisallowInterceptTouchEvent(false)
-                    }else if ((dx > 0 && totalDx + dx <= maxDx) || (dx < 0 && totalDx + dx >= 0f)) {
+                    if ((dx > 0 && x + dx > maxDx) || (dx < 0 && x + dx -marginLeft < 0)) {
+                    }else if ((dx > 0 &&  x + dx <= maxDx) || (dx < 0 &&  x + dx  >= marginLeft)) {
                         x += dx
                         totalDx += dx
                     }
+                }else{
+                    parent.requestDisallowInterceptTouchEvent(false)
                 }
                 lastY = ev.rawY
                 lastX = ev.rawX

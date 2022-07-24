@@ -60,8 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@id/activity_date_view_pager_day"
-            app:layout_constraintTop_toBottomOf="@id/activity_date_week_list"
-            app:layout_constraintVertical_weight="1" />
+            app:layout_constraintTop_toBottomOf="@id/activity_date_week_list" />
 
         <watermelon.tobe.view.DirectionFloatingButton
             android:id="@+id/activity_date_view_add_button"
@@ -69,9 +68,21 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:src="@drawable/ic_add"
+            android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toTopOf="@id/activity_date_view_pager_day"
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_date_view_pager_month"
+            app:rippleColor="#FCFCFC" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/activity_date_view_today_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:layout_marginEnd="10dp"
+
+            android:src="@drawable/ic_today"
+            app:layout_constraintBottom_toTopOf="@id/activity_date_view_pager_day"
+            app:layout_constraintRight_toLeftOf="@id/activity_date_view_add_button"
             app:layout_constraintTop_toBottomOf="@id/activity_date_view_pager_month"
             app:rippleColor="#FCFCFC" />
 

@@ -1,10 +1,9 @@
 package watermelon.tobe.repo.database
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 import watermelon.tobe.repo.bean.Day
+import watermelon.tobe.service.aidl.Todo
 
 
 /**
@@ -16,6 +15,7 @@ import watermelon.tobe.repo.bean.Day
 
 
 @Database(entities = [Day::class], version = 1, exportSchema = false)
+@TypeConverters(Todo.TodoConverter::class)
 abstract class DayDatabase : RoomDatabase() {
 
     abstract fun getDayDao(): DayDao

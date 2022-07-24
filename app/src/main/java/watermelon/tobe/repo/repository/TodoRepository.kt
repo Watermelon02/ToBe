@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import watermelon.tobe.util.extension.toast
 import watermelon.tobe.repo.bean.QueryTodoResponse
+import watermelon.tobe.repo.database.DayDatabase
 import watermelon.tobe.repo.database.TodoDatabase
 import watermelon.tobe.repo.service.ToDoService
 import watermelon.tobe.service.aidl.Todo
@@ -21,6 +22,7 @@ object TodoRepository {
     //两端都没有Todo时发送的假数据
     val emptyData by lazy { listOf(Todo(title = "Empty", content = "快来创建Todo吧！", priority = -1)) }
     val connectFailData by lazy { listOf(Todo(title = "Connect Fail", content = "网络连接失败，检查一下网络或者是否登录吧", priority = -1)) }
+    val loginFailData by lazy { listOf(Todo(title = "Not Logged On", content = "没有登录哦，检查一下网络或者是否登录吧", priority = -1)) }
 
     suspend fun addTodo(title: String, content: String, date: String, priority: Int = 0) {
         val type = DateCalculator.formatDateForQueryHoliday(date).toLong()
@@ -28,6 +30,8 @@ object TodoRepository {
             val response = ToDoService.INSTANCE.addTodo(title, content, date, type, priority)
             if (response.errorCode == 0) {
                 TodoDatabase.getInstance().getTodoDao().insert(response.data)
+                /*DayDatabase.getInstance().getDayDao().queryDay(date)
+                DayDatabase.getInstance().getDayDao().insert()*/
             } else {
                 throw Exception(response.errorMsg)
             }
@@ -120,7 +124,10 @@ object TodoRepository {
         } else if (remote.errorCode == -1001) {//没有登录
             if (UserRepository.tryLogin()) {//登录成功,再次发送请求
                 queryRemote(date, type, local, status, priority, index)
-            } else toast("没有登录")
+            } else {
+                emit(loginFailData)
+                toast("没有登录")
+            }
         } else {
             throw Exception(remote.errorMsg)
         }

@@ -12,8 +12,12 @@ import watermelon.tobe.base.BaseApp
  * date : 2022/7/22 20:21
  */
 val toastHandler by lazy { Handler(Looper.getMainLooper()) }
-fun toast(s: CharSequence) {
-    toastHandler.post {
-        Toast.makeText(BaseApp.appContext, s, Toast.LENGTH_SHORT).show()
+var lastToast = ""
+fun toast(s: String) {
+    if (s!= lastToast){
+        toastHandler.post {
+            Toast.makeText(BaseApp.appContext, s, Toast.LENGTH_SHORT).show()
+            lastToast = s
+        }
     }
 }

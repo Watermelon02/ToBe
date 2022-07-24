@@ -7,11 +7,15 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.ViewParent
+import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
+import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.viewmodel.DateViewModel
 import kotlin.math.absoluteValue
@@ -22,7 +26,7 @@ import kotlin.math.absoluteValue
  * email : 1446157077@qq.com
  * date : 2022/6/23 15:07
  */
-class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
+class InnerScrollLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
     private var lastX = 0f
     private var lastY = 0f
     private var totalDy = 0f
@@ -30,7 +34,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
     private var collapsedHeight = 0
     var expandedHeight = 0
     private var firstInit = false
-    private var isScrolling = false
     private var scrollDirection = -1
     var collapsedState = DateViewModel.CollapsedState.COLLAPSED
         set(value) {
@@ -91,7 +94,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                             this.height = childHeight + dy.toInt()
                             requestLayout()
                         }
-                        isScrolling = true
                         totalDy += dy.toInt()
                     }
                 }
@@ -152,7 +154,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
                 (getChildAt(0) as CollapsedRecycleView).collapsedState =
                     DateViewModel.CollapsedState.EXPAND
                 collapsedParentLayout.expandListener?.invoke()
-                isScrolling = false
             }
         }
 
@@ -169,7 +170,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : LinearLayout(c
             (getChildAt(0) as CollapsedRecycleView).collapsedState =
                 DateViewModel.CollapsedState.COLLAPSED
             collapsedParentLayout.collapseListener?.invoke()
-            isScrolling = false
         }
     }
 

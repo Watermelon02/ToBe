@@ -18,7 +18,6 @@ import java.util.*
  */
 class MonthFragmentViewModel : ViewModel() {
     val days = MutableStateFlow(listOf<Day>())
-    var firstInit = true
     fun emitDays(month: String) {
         viewModelScope.launch(Dispatchers.IO) {
             days.emit(getWeekDayAtNextMonth(getWeekDayAtLastMonth(DateRepository.queryMonth(month))))

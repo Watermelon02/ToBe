@@ -3,6 +3,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import com.google.gson.reflect.TypeToken
+import watermelon.tobe.util.local.GsonInstance
 
 /**
  * author : Watermelon02
@@ -76,4 +79,16 @@ data class Todo(
         }
         return arrayList.toList()
     }*/
+    class TodoConverter{
+        @TypeConverter
+        fun objectToJson(`object`: List<Todo?>?): String {
+            return GsonInstance.INSTANCE.toJson(`object`)
+        }
+
+        @TypeConverter
+        fun jsonToObject(json: String?): List<Todo> {
+            val type = object : TypeToken<List<Todo?>?>() {}.type
+            return GsonInstance.INSTANCE.fromJson(json, type)
+        }
+    }
 }

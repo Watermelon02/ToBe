@@ -42,13 +42,17 @@ class InnerRecyclerView(context: Context, attrs: AttributeSet?) : LinearLayout(c
                 if (scrollDirection == VERTICAL) {
                     if (dy.absoluteValue > dx.absoluteValue) {
                         val scrollToBottom =
-                            ((getChildAt(0) as RecyclerView).adapter as TodoAdapter).todoList.size ==
+                            ((getChildAt(0) as RecyclerView).adapter as TodoAdapter).todoList.size-1 ==
                                     ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-                        val scrollToTop = 0 == ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+                        val scrollToTop =
+                            0 == ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
                         if ((!scrollToBottom && dy < 0) || (!scrollToTop && dy > 0)
                         ) {
                             parent.requestDisallowInterceptTouchEvent(true)
                             getCollapseViewPagerLayout(parent).innerScroll = true
+                        } else if (scrollToBottom && scrollToTop) {//如果rv能展示所有数据，则不处理滑动事件
+                            parent.requestDisallowInterceptTouchEvent(false)
+                            getCollapseViewPagerLayout(parent).innerScroll = false
                         } else {
                             parent.requestDisallowInterceptTouchEvent(false)
                             getCollapseViewPagerLayout(parent).innerScroll = false
@@ -63,8 +67,23 @@ class InnerRecyclerView(context: Context, attrs: AttributeSet?) : LinearLayout(c
             }
             else -> {
                 parent.requestDisallowInterceptTouchEvent(false)
-                getCollapseViewPagerLayout(parent).innerScroll = false
                 scrollDirection = -1
+                getCollapseViewPagerLayout(parent).apply {
+                    innerScroll = false
+                    if (height > 0) {//展开中
+                        if (getInnerScrollLayout(dayFragmentVp)!!.getChildAt(0).height > (expandedHeight - collapsedHeight) * 0.5) {
+                            generateCollapseAnimator().start()
+                        } else {
+                            generateExpandAnimator().start()
+                        }
+                    } else {//收缩中
+                        if (height < (expandedHeight - collapsedHeight) * 0.5) {
+                            generateCollapseAnimator().start()
+                        } else {
+                            generateExpandAnimator().start()
+                        }
+                    }
+                }
             }
         }
         return super.dispatchTouchEvent(ev)

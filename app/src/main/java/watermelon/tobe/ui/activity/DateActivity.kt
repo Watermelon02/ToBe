@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
@@ -38,6 +37,7 @@ import watermelon.tobe.util.local.DateCalculator.TOTAL_MONTH
 import watermelon.tobe.util.local.DateCalculator.lastDay
 import watermelon.tobe.util.local.DateCalculator.lastMonth
 import watermelon.tobe.util.local.DateCalculator.lastYear
+import watermelon.tobe.util.local.DateCalculator.todayDate
 import watermelon.tobe.viewmodel.AddTodoFragmentViewModel
 import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.UserViewModel
@@ -45,9 +45,9 @@ import java.util.*
 
 class DateActivity : BaseActivity() {
     private lateinit var dateViewModel: DateViewModel
+    private var lastMonthVpPosition = TOTAL_MONTH / 2
     lateinit var binding: ActivityDateBinding
     private var yearTextWidth = 0
-    private var isScrolling = false
     private val addTodoBottomSheet by lazy {
         AddTodoDialogFragment().apply {
             isCancelable = true//设置点击外部是否可以取消
@@ -78,6 +78,15 @@ class DateActivity : BaseActivity() {
                 addTodoBottomSheet.show(supportFragmentManager, FRAGMENT_ADD_TODO)
                 addTodoViewModel.emitShowingState(true)
             }
+            activityDateViewTodayButton.setOnClickListener {
+                DateCalculator.currentDate.value = todayDate
+                if (lastMonthVpPosition != TOTAL_MONTH/2){
+                    activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
+                    lastMonthVpPosition = TOTAL_MONTH / 2
+                    activityDateNumberMonth.resetToCurrentMonth()
+                    activityDateViewPagerMonth.adapter?.notifyDataSetChanged()
+                }
+            }
             activityDateCollapseLayout.collapseListener = {
                 dateViewModel.emitCollapsedState(DateViewModel.CollapsedState.COLLAPSED)
             }
@@ -98,23 +107,17 @@ class DateActivity : BaseActivity() {
             //监听上方月份VP的滑动，根据滑动切换activityDateViewPagerMonth的值
             activityDateViewPagerMonth.registerOnPageChangeCallback(object :
                 ViewPager2.OnPageChangeCallback() {
-                private var lastPosition = TOTAL_MONTH / 2
                 override fun onPageScrolled(
                     position: Int,
                     positionOffset: Float,
                     positionOffsetPixels: Int,
                 ) {
                     //1为RightToLeft,0为LeftToRight
-                    val direction = if (lastPosition == position) 0 else 1
+                    val direction = if (lastMonthVpPosition == position) 0 else 1
                     activityDateNumberMonth.translate(
                         direction,
                         positionOffset
                     )
-                }
-
-                override fun onPageScrollStateChanged(state: Int) {
-                    if (state == 2) isScrolling = false
-                    super.onPageScrollStateChanged(state)
                 }
 
                 override fun onPageSelected(position: Int) {
@@ -130,12 +133,12 @@ class DateActivity : BaseActivity() {
                     dateViewModel.currentYear = calendar[Calendar.YEAR]
                     dateViewModel.currentMonth = calendar[Calendar.MONTH]
                     //改变月份
-                    if (position > lastPosition) {
+                    if (position > lastMonthVpPosition) {
                         activityDateNumberMonth.changePosition(1)
-                    } else {
+                    } else if (position < lastMonthVpPosition){
                         activityDateNumberMonth.changePosition(0)
                     }
-                    lastPosition = position
+                    lastMonthVpPosition = position
                 }
             })
             bindTodoManagerService()
@@ -152,6 +155,12 @@ class DateActivity : BaseActivity() {
                     if (currentYear != lastYear || currentMonth != lastMonth) {
                         //当切换了月份后点击日期,需要改变下方vp中的值
                         dateViewModel.emitDays("${currentYear}-${currentMonth}")
+                    }
+                    if (it!=todayDate){
+                        activityDateViewTodayButton.animate().alpha(1f)
+                    }
+                    if (it==todayDate){
+                        activityDateViewTodayButton.animate().alpha(0f)
                     }
                     //day-1才是对应的index
                     activityDateViewPagerDay.currentItem = currentDay - 1
