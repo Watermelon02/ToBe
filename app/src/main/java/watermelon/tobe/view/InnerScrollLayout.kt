@@ -3,16 +3,12 @@ package watermelon.tobe.view
 import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.widget.FrameLayout
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
@@ -84,7 +80,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : FrameLayout(co
                             }
                         }
                     }
-                    totalDx += dx.toInt()
                 } else {//垂直滑动
                     if ((dy > 0 && height + dy <= expandedHeight) || (dy < 0 && height >= collapsedHeight)) {
                         collapsedParentLayout.verticalScrollingListener?.invoke()
@@ -94,9 +89,10 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : FrameLayout(co
                             this.height = childHeight + dy.toInt()
                             requestLayout()
                         }
-                        totalDy += dy.toInt()
                     }
                 }
+                totalDx += dx.toInt()
+                totalDy += dy.toInt()
                 lastY = ev.rawY
                 lastX = ev.rawX
             }
@@ -113,21 +109,6 @@ class InnerScrollLayout(context: Context, attrs: AttributeSet?) : FrameLayout(co
                             generateExpandAnimator().start()
                         } else {
                             generateCollapseAnimator().start()
-                        }
-                    }
-                } else if (scrollDirection == HORIZONTAL) {
-                    if (collapsedState == DateViewModel.CollapsedState.COLLAPSED) {
-                        val rv = getChildAt(0) as RecyclerView
-                        if (rv.layoutManager is WeeklyViewLayoutManager) {
-                            val count =
-                                if (totalDx < 0) {
-                                    (rv.layoutManager as WeeklyViewLayoutManager).findLastVisibleItemPosition() / 7
-                                } else {
-                                    (rv.layoutManager as WeeklyViewLayoutManager).findFirstVisibleItemPosition() / 7
-                                }
-                            (rv.layoutManager as WeeklyViewLayoutManager).scrollPosition = count * 7
-                            (rv.layoutManager as WeeklyViewLayoutManager).totalDx = 0
-                            rv.layoutManager?.requestLayout()
                         }
                     }
                 }

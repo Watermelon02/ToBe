@@ -28,7 +28,7 @@ import watermelon.tobe.viewmodel.MonthFragmentViewModel
 class MonthFragment(
     private val month: String,
 ) : Fragment() {
-    //在切换周月视图时，会重复用到这两个LayoutManager,，所以在这里初始化
+    //在切换周月视图时，会重复用到这两个LayoutManager,而且贯穿整个应用的生命周期，所以在这里缓存
     val weeklyViewLayoutManager by lazy {
         WeeklyViewLayoutManager(
             requireContext(),

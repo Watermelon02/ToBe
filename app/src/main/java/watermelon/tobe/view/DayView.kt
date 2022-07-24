@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.TextView
 import androidx.core.animation.doOnEnd
 
@@ -59,5 +60,11 @@ class DayView(context: Context, attrs: AttributeSet) :
             beChosen = false
         }
         animator?.start()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        setTextColor(Color.BLACK)
+        backGroundRadius = 0f
     }
 }
