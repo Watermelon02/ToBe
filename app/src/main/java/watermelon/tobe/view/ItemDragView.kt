@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.core.view.marginEnd
 import androidx.core.view.marginLeft
 import androidx.core.view.marginStart
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.card.MaterialCardView
 import kotlin.math.absoluteValue
 
@@ -23,6 +24,7 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
     var totalDx = 0f
     private var lastX = 0f
     private var lastClickTime = 0L
+    private var direction = -1
     var doubleClickListener: (() -> Unit)? = null
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -44,7 +46,12 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
             MotionEvent.ACTION_MOVE -> {
                 val dy = ev.rawY - lastY
                 val dx = ev.rawX - lastX
-                if (dx.absoluteValue > dy.absoluteValue) {
+                if (direction == -1){
+                    direction = if (dx.absoluteValue > dy.absoluteValue){
+                        LinearLayoutManager.HORIZONTAL
+                    }else LinearLayoutManager.VERTICAL
+                }
+                if (direction == LinearLayoutManager.HORIZONTAL) {
                     if ((dx > 0 && x + dx > maxDx) || (dx < 0 && x + dx -marginLeft < 0)) {
                     }else if ((dx > 0 &&  x + dx <= maxDx) || (dx < 0 &&  x + dx  >= marginLeft)) {
                         x += dx
@@ -60,6 +67,7 @@ class ItemDragView(context: Context?, attrs: AttributeSet?) : MaterialCardView(c
                 if (totalDx > maxDx / 2) {
                     animate().x(maxDx)
                 } else animate().x(0f + marginLeft)
+                direction = -1
                 parent.requestDisallowInterceptTouchEvent(false)
                 totalDx = 0f
             }

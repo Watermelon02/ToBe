@@ -1,5 +1,6 @@
 package watermelon.tobe.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.flow.collectLatest
+import watermelon.tobe.base.BaseApp
 import watermelon.tobe.databinding.FragmentMonthBinding
 import watermelon.tobe.ui.adapter.DaysAdapter
 import watermelon.tobe.util.extension.safeLaunch
@@ -26,13 +28,25 @@ import watermelon.tobe.viewmodel.MonthFragmentViewModel
 class MonthFragment(
     private val month: String,
 ) : Fragment() {
+    //在切换周月视图时，会重复用到这两个LayoutManager,，所以在这里初始化
+    val weeklyViewLayoutManager by lazy {
+        WeeklyViewLayoutManager(
+            requireContext(),
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+    }
+    val monthlyViewLayoutManager by lazy { MonthlyViewLayoutManager(requireContext(), 7) }
+
     private lateinit var binding: FragmentMonthBinding
     private val monthFragmentViewModel by lazy { ViewModelProvider(this)[MonthFragmentViewModel::class.java] }
     private val dateViewModel: DateViewModel by lazy { ViewModelProvider(requireActivity())[DateViewModel::class.java] }
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding =
             FragmentMonthBinding.inflate(LayoutInflater.from(context), null, false)
@@ -42,16 +56,12 @@ class MonthFragment(
                 DaysAdapter(dateViewModel.dayFragmentDays.value)
             binding.fragmentMonthRecyclerviewDay.setMonthLayoutManager = {
                 fragmentMonthRecyclerviewDay.layoutManager =
-                    MonthlyViewLayoutManager(context, 7)
+                    monthlyViewLayoutManager
                 fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
             }
             binding.fragmentMonthRecyclerviewDay.setWeekLayoutManager = {
                 fragmentMonthRecyclerviewDay.layoutManager =
-                    WeeklyViewLayoutManager(
-                        requireContext(),
-                        LinearLayoutManager.HORIZONTAL,
-                        false
-                    )
+                    weeklyViewLayoutManager
                 fragmentMonthRecyclerviewDay.adapter?.notifyDataSetChanged()
             }
             viewLifecycleOwner.safeLaunch {

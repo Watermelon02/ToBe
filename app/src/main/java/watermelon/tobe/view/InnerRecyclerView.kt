@@ -22,9 +22,8 @@ import kotlin.math.absoluteValue
 class InnerRecyclerView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     private var lastX = 0f
     private var lastY = 0f
-    private var interceptX = 0f
-    private var interceptY = 0f
     private var scrollDirection = -1
+    private val innerRv by lazy { getChildAt(0) as RecyclerView }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         when (ev?.action) {
@@ -41,18 +40,21 @@ class InnerRecyclerView(context: Context, attrs: AttributeSet?) : LinearLayout(c
                 }
                 if (scrollDirection == VERTICAL) {
                     if (dy.absoluteValue > dx.absoluteValue) {
-                        val scrollToBottom =
-                            ((getChildAt(0) as RecyclerView).adapter as TodoAdapter).todoList.size-1 ==
-                                    ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-                        val scrollToTop =
-                            0 == ((getChildAt(0) as RecyclerView).layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
-                        if ((!scrollToBottom && dy < 0) || (!scrollToTop && dy > 0)
-                        ) {
-                            parent.requestDisallowInterceptTouchEvent(true)
-                            getCollapseViewPagerLayout(parent).innerScroll = true
-                        } else if (scrollToBottom && scrollToTop) {//如果rv能展示所有数据，则不处理滑动事件
+                        val lastChildPosition =
+                            (innerRv.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+                        val firstChildPosition =
+                            (innerRv.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+                        val childSize = (innerRv.adapter as TodoAdapter).todoList.size
+                        val scrollToBottom = childSize - 1 == lastChildPosition
+                        val scrollToTop = 0 == firstChildPosition
+                        val rvShowingAll = (innerRv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() == (innerRv.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                        if ((scrollToBottom && scrollToTop) || (rvShowingAll)) {
+                            //如果rv能展示所有数据，则不处理滑动事件
                             parent.requestDisallowInterceptTouchEvent(false)
                             getCollapseViewPagerLayout(parent).innerScroll = false
+                        } else if ((!scrollToBottom && dy < 0) || (!scrollToTop && dy > 0)) {
+                            parent.requestDisallowInterceptTouchEvent(true)
+                            getCollapseViewPagerLayout(parent).innerScroll = true
                         } else {
                             parent.requestDisallowInterceptTouchEvent(false)
                             getCollapseViewPagerLayout(parent).innerScroll = false
