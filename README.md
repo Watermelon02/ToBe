@@ -1,4 +1,4 @@
-# ![页面 1 (2)](/Users/xigua/Desktop/Android/ToBe/pic/页面 1 (2).png)
+# ![页面 1 (2)](./pic/页面 1 (2).png)
 
 # ToBe
 
@@ -6,7 +6,7 @@
 
 ## 预览
 
-## ![1658753208939](/Users/xigua/Desktop/Android/ToBe/pic/1658753208939.gif)
+## ![1658753208939](./pic/1658753208939.gif)
 
 ## 架构
 
@@ -14,11 +14,11 @@
 
 日历相关的数据在第一次使用app且没有连接网络时，会生成本地数据（但是没有节假日信息）；
 
-![Screenshot_2022-07-24-23-19-40-176_watermelon.tob](/Users/xigua/Desktop/Android/ToBe/pic/Screenshot_2022-07-24-23-19-40-176_watermelon.tob.jpg)
+![Screenshot_2022-07-24-23-19-40-176_watermelon.tob](./pic/Screenshot_2022-07-24-23-19-40-176_watermelon.tob.jpg)
 
 在第一次联网时，则会获取网络数据，并将其缓存到数据库，之后就不再从网络获取数据，直接从本地获取。
 
-![Screenshot_2022-07-25-21-14-50-417_watermelon.tob](/Users/xigua/Desktop/Android/ToBe/pic/Screenshot_2022-07-25-21-14-50-417_watermelon.tob.jpg)
+![Screenshot_2022-07-25-21-14-50-417_watermelon.tob](./pic/Screenshot_2022-07-25-21-14-50-417_watermelon.tob.jpg)
 
 Todo相关的数据则会根据加载情况发送加载中，网络连接失败，没有登录，数据为空等错误信息。同时也会做本地缓存。在本地有缓存的情况下，如果和远端数据不一致，则会更新数据
 
@@ -86,7 +86,7 @@ fun queryTodoList(status: Int = -1, date: String, priority: Int = 0, index: Int 
 
 可以通过滑动上方的日历，下方的日期详情界面,或者是通过日期界面中的Rv来 折叠\展开 月历部分从而来达到切换 周视图\月视图 的效果。
 
-### ![1658677663567](/Users/xigua/Desktop/Android/ToBe/pic/1658677663567.gif)
+### ![1658677663567](./pic/1658677663567.gif)
 
 在周视图模式（折叠状态）下，因为重写了`LayoutManager`的`onLayoutChildern()`来实现刚好显示一周的日期，所以没办法在每次滑动结束时直接通过`LayoutManager`的`scrollToPosition()`方法来让日期滚动到指定位置。所以又不得不重写`LayoutManager`水平滑动的方法。
 
@@ -96,13 +96,13 @@ fun queryTodoList(status: Int = -1, date: String, priority: Int = 0, index: Int 
 
 长按 菜单按钮(`...`形状)，会弹出新增Todo,切换查看`已完成\未完成`Todo的两个按钮。点击新增Todo的`+`形状按钮后，会进入新增Todo界面，有一些动画效果包括新增Todo按钮消失和菜单按钮的闪烁
 
-![1658756920931](/Users/xigua/Desktop/Android/ToBe/pic/1658756920931.gif)
+![1658756920931](./pic/1658756920931.gif)
 
 通过滑动下方`Time`模块中的年月日，和时钟来设置新Todo的时间信息。点击右上角的`✔️`完成创建
 
 ### 查看\操作Todo
 
-![1658757968170](/Users/xigua/Desktop/Android/ToBe/pic/1658757968170.gif)
+![1658757968170](./pic/1658757968170.gif)
 
 左右滑动Todo来暴露按钮，点击红色渐变按钮删除，点击蓝色渐变按钮完成Todo。点击切换菜单按钮查看已经完成的Todo。双击Todo修改该Todo的信息
 
@@ -110,7 +110,7 @@ fun queryTodoList(status: Int = -1, date: String, priority: Int = 0, index: Int 
 
 通过一个运行在其他进程的`Service`，定时查询当日的Todo完成情况，包括提醒还有未完成Todo和已经逾期的Todo。
 
-![Screenshot_2022-07-25-22-53-10-644_watermelon.tob](/Users/xigua/Desktop/Android/ToBe/pic/Screenshot_2022-07-25-22-53-10-644_watermelon.tob.jpg)
+![Screenshot_2022-07-25-22-53-10-644_watermelon.tob](./pic/Screenshot_2022-07-25-22-53-10-644_watermelon.tob.jpg)
 
 因为需要满足在`添加\删除`Todo后，Service能及时更改数据，所以需要通过`Binder`实现通信。这里通过`AIDL`然后重写`Stub`的方式完成（总不能要我手写吧）
 
