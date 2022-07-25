@@ -22,8 +22,7 @@
         <service
             android:name=".service.TodoManagerService"
             android:enabled="true"
-            android:exported="true"
-            android:process=":remote"/>
+            android:exported="true" />
 
         <activity
             android:name=".ui.activity.DateActivity"

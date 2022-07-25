@@ -124,6 +124,7 @@ class ClockView(context: Context?, attrs: AttributeSet) : View(context, attrs) {
             MotionEvent.ACTION_DOWN -> {
                 lastX = event.rawX
                 lastY = event.rawY
+                parent.requestDisallowInterceptTouchEvent(true)
             }
             MotionEvent.ACTION_MOVE -> {
                 degree = calculateDegree(event.rawX, event.rawY)
@@ -134,6 +135,7 @@ class ClockView(context: Context?, attrs: AttributeSet) : View(context, attrs) {
                 scrollListener?.invoke(totalDegree)//回调滑动监听
             }
             else -> {
+                parent.requestDisallowInterceptTouchEvent(false)
                 release()
             }
         }
