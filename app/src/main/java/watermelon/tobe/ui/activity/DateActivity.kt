@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.view.View
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
@@ -48,6 +49,7 @@ class DateActivity : BaseActivity() {
     private var lastMonthVpPosition = TOTAL_MONTH / 2
     lateinit var binding: ActivityDateBinding
     private var yearTextWidth = 0
+    private var isMenuExpand = false
     private val addTodoBottomSheet by lazy {
         AddTodoDialogFragment().apply {
             isCancelable = true//设置点击外部是否可以取消
@@ -74,13 +76,42 @@ class DateActivity : BaseActivity() {
             activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
             activityDateViewPagerDay.adapter =
                 DayInfoAdapter(this@DateActivity, DateCalculator.getDays(0))
-            activityDateViewAddButton.setOnClickListener {
+            //控制另外addButton和listChangeButton的出现和消失
+            activityDateMenuButton.rotation = 90f
+            activityDateMenuButton.setOnLongClickListener {
+                isMenuExpand = if (isMenuExpand) {
+                    activityDateListChangeButton.animate().xBy(200f).withEndAction {
+                        activityDateListChangeButton.visibility = View.INVISIBLE
+                    }
+                    activityDateAddButton.animate().xBy(400f).withEndAction {
+                        activityDateAddButton.visibility = View.INVISIBLE
+                    }
+                    activityDateMenuButton.animate().rotation(90f)
+                    false
+                } else {
+                    activityDateAddButton.visibility = View.VISIBLE
+                    activityDateListChangeButton.visibility = View.VISIBLE
+                    activityDateListChangeButton.animate().xBy(-200f)
+                    activityDateAddButton.animate().xBy(-400f)
+                    activityDateMenuButton.animate().rotation(0f)
+                    true
+                }
+                true
+            }
+            //新增TodoButton
+            activityDateAddButton.setOnClickListener {
                 addTodoBottomSheet.show(supportFragmentManager, FRAGMENT_ADD_TODO)
                 addTodoViewModel.emitShowingState(true)
             }
-            activityDateViewTodayButton.setOnClickListener {
+            //完成/未完成Todo切换Button
+            activityDateListChangeButton.setOnClickListener {
+                dateViewModel.changeQueryTodoState()
+                activityDateListChangeButton.animate().rotationBy(90f)
+            }
+            //跳转今日Button
+            activityDateTodayButton.setOnClickListener {
                 DateCalculator.currentDate.value = todayDate
-                if (lastMonthVpPosition != TOTAL_MONTH/2){
+                if (lastMonthVpPosition != TOTAL_MONTH / 2) {
                     activityDateViewPagerMonth.currentItem = TOTAL_MONTH / 2
                     lastMonthVpPosition = TOTAL_MONTH / 2
                     activityDateNumberMonth.resetToCurrentMonth()
@@ -135,20 +166,18 @@ class DateActivity : BaseActivity() {
                     //改变月份
                     if (position > lastMonthVpPosition) {
                         activityDateNumberMonth.changePosition(1)
-                    } else if (position < lastMonthVpPosition){
+                    } else if (position < lastMonthVpPosition) {
                         activityDateNumberMonth.changePosition(0)
                     }
                     lastMonthVpPosition = position
                 }
             })
             bindTodoManagerService()
-            safeLaunch {//初始化,让上方vp到中间当前月份
-                //初始化下方vp的数据
-                dateViewModel.emitDays("${dateViewModel.currentYear}-${dateViewModel.currentMonth}")
-            }
+            //初始化下方vp的数据
+            dateViewModel.emitDays("${dateViewModel.currentYear}-${dateViewModel.currentMonth}")
             //对当前vp应该显示日期的监听，当接收到数据时，切换到对应item
             safeLaunch {
-                DateCalculator.currentDate.collect {
+                DateCalculator.currentDate.collectLatest {
                     val currentYear = it.split("-")[0].toInt()
                     val currentMonth = it.split("-")[1].toInt()
                     val currentDay = it.split("-")[2].toInt()
@@ -156,11 +185,11 @@ class DateActivity : BaseActivity() {
                         //当切换了月份后点击日期,需要改变下方vp中的值
                         dateViewModel.emitDays("${currentYear}-${currentMonth}")
                     }
-                    if (it!=todayDate){
-                        activityDateViewTodayButton.animate().alpha(1f)
+                    if (it != todayDate) {
+                        activityDateTodayButton.animate().alpha(1f)
                     }
-                    if (it==todayDate){
-                        activityDateViewTodayButton.animate().alpha(0f)
+                    if (it == todayDate) {
+                        activityDateTodayButton.animate().alpha(0f)
                     }
                     //day-1才是对应的index
                     activityDateViewPagerDay.currentItem = currentDay - 1
@@ -186,7 +215,7 @@ class DateActivity : BaseActivity() {
             //对折叠状态进行监听，改变中间Button的状态
             safeLaunch {
                 dateViewModel.collapsedState.collectLatest {
-                    binding.activityDateViewAddButton.collapsedStateAnimate(it)
+                    binding.activityDateMenuButton.collapsedStateAnimate(it)
                 }
             }
             //对用户界面是否展示进行监听，改变右上角用户图标的可见度
@@ -199,8 +228,14 @@ class DateActivity : BaseActivity() {
             //对AddTodo界面进行监听，改变中间fab的状态
             safeLaunch {
                 addTodoViewModel.isShowing.collectLatest {
-                    if (it) binding.activityDateViewAddButton.addTodoAnimate()
-                    else binding.activityDateViewAddButton.cancelAddTodoAnimate()
+                    if (it) {//正在展示AddTodo界面
+                        binding.activityDateMenuButton.addTodoAnimate(this@DateActivity)
+                        binding.activityDateAddButton.animate().alpha(0f)
+                    }
+                    else {
+                        binding.activityDateMenuButton.cancelAddTodoAnimate()
+                        binding.activityDateAddButton.animate().alpha(1f)
+                    }
                 }
             }
         }
@@ -220,7 +255,7 @@ class DateActivity : BaseActivity() {
                 todoManagerServiceConnection,
                 Context.BIND_AUTO_CREATE)
         }
-        
+
     }
 
     /**通过动画让年份切换到上一年*/
@@ -243,9 +278,3 @@ class DateActivity : BaseActivity() {
                 animate().x(0f).alpha(1f)
             }
 }
-
-
-
-
-
-

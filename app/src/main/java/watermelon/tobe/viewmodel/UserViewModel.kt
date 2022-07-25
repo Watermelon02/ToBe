@@ -1,5 +1,6 @@
 package watermelon.tobe.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,8 @@ class UserViewModel : ViewModel() {
             ToDoService.INSTANCE.exit()
             user.emit(null)
             BaseApp.todoManagerBinder?.exit()
+            BaseApp.appContext.getSharedPreferences(UserRepository.KEY_USER, Context.MODE_PRIVATE).edit()
+                .putString(UserRepository.KEY_USERNAME, "").putString(UserRepository.KEY_PASSWORD, "").apply()
         }
     }
 

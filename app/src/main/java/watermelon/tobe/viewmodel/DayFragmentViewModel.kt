@@ -22,9 +22,19 @@ import watermelon.tobe.util.local.DateCalculator
  */
 class DayFragmentViewModel : ViewModel() {
     val todoList = MutableStateFlow<List<Todo>>(listOf())
-    fun queryTodoList(date: String) {
+    //查询未完成的Todo
+    fun queryTodoListNotFinished(date: String) {
         viewModelScope.launch(Dispatchers.IO) {
             TodoRepository.queryTodoList(date = date, status = 0).collectLatest {
+                todoList.emit(it)
+            }
+        }
+    }
+
+    //查询已完成的Todo
+    fun queryTodoListFinished(date: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            TodoRepository.queryTodoList(date = date, status = 1).collectLatest {
                 todoList.emit(it)
             }
         }

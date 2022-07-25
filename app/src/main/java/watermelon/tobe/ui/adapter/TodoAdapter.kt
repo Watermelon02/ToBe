@@ -1,14 +1,14 @@
 package watermelon.tobe.ui.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import watermelon.tobe.databinding.ItemTodoBinding
-import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.service.aidl.Todo
+import watermelon.tobe.util.extension.toast
+import watermelon.tobe.viewmodel.DateViewModel
 import watermelon.tobe.viewmodel.DayFragmentViewModel
 
 /**
@@ -17,9 +17,10 @@ import watermelon.tobe.viewmodel.DayFragmentViewModel
  * date : 2022/7/19 13:29
  */
 class TodoAdapter(
+    var queryTodoState: DateViewModel.QueryTodoState,
     var todoList: List<Todo>,
     val viewModel: DayFragmentViewModel,
-    val updateTodoListener: (todo: Todo) -> Unit
+    val updateTodoListener: (todo: Todo) -> Unit,
 ) :
     RecyclerView.Adapter<TodoAdapter.ViewHolder>() {
     class ViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root)
@@ -30,25 +31,35 @@ class TodoAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.apply {
             itemTodoTitle.text = todoList[position].title
-            if (todoList[position].priority!=-1){
-                itemTodoHour.text ="(${todoList[position].priority}:00)"
+            if (todoList[position].priority != -1) {
+                itemTodoHour.text = "(${todoList[position].priority}:00)"
             }
             itemTodoContent.text = todoList[position].content
-            itemTodoBlueButton.setColor(Color.BLUE)
-            itemTodoRedButton.setColor(Color.RED)
-            itemTodoRedButton.setOnClickListener {
+            itemTodoLeftButton.setColor(Color.RED)
+            itemTodoLeftButton.setOnClickListener {
                 viewModel.deleteTodo(todoList[position])
-
             }
-            itemTodoBlueButton.setOnClickListener {
-                itemTodoBlueButton.animate().alpha(0f).setDuration(400).withEndAction {
-                    itemTodoBlueButton.setColor(Color.GREEN)
-                    itemTodoBlueButton.animate().alpha(1f)
+            if (queryTodoState == DateViewModel.QueryTodoState.NOT_FINISHED) {
+                itemTodoRightButton.setColor(Color.BLUE)
+                itemTodoRightButton.setOnClickListener {
+                    itemTodoRightButton.animate().alpha(0f).setDuration(400).withEndAction {
+                        itemTodoRightButton.setColor(Color.GREEN)
+                        itemTodoRightButton.animate().alpha(1f)
+                    }
+                    viewModel.finishTodo(todoList[position])
                 }
-                viewModel.finishTodo(todoList[position])
-            }
-            itemTodoDragView.doubleClickListener = {
-                updateTodoListener(todoList[position])
+                itemTodoDragView.doubleClickListener = {
+                    updateTodoListener(todoList[position])
+                }
+            } else {
+                itemTodoRightButton.setColor(Color.GREEN)
+                itemTodoRightButton.setOnClickListener {
+                    itemTodoRightButton.animate().alpha(0f).setDuration(400).withEndAction {
+                        itemTodoRightButton.setColor(Color.GREEN)
+                        itemTodoRightButton.animate().alpha(1f)
+                    }
+                    toast("Todo已经被完成啦！")
+                }
             }
         }
     }

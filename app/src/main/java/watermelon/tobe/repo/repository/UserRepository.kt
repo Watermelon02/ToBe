@@ -13,9 +13,9 @@ import watermelon.tobe.repo.service.ToDoService
  * date : 2022/7/22 18:09
  */
 object UserRepository {
-    private const val KEY_USER = "user"
-    private const val KEY_USERNAME = "username"
-    private const val KEY_PASSWORD = "password"
+    internal const val KEY_USER = "user"
+    internal const val KEY_USERNAME = "username"
+    internal const val KEY_PASSWORD = "password"
     val user = MutableStateFlow<LoginResponse?>(null)
     suspend fun tryLogin(): Boolean {
         val sp = BaseApp.appContext.getSharedPreferences(KEY_USER, Context.MODE_PRIVATE)

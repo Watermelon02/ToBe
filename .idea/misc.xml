@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/animated_vector_menu.xml" value="0.123" />
+        <entry key="app/src/main/res/drawable/ic___.xml" value="0.123" />
+        <entry key="app/src/main/res/drawable/ic____.xml" value="0.123" />
+        <entry key="app/src/main/res/drawable/ic______1_.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_add.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_arrow_bottom.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_arrow_top.xml" value="0.123" />
@@ -10,6 +14,7 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_list.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_logo.xml" value="0.123" />
+        <entry key="app/src/main/res/drawable/ic_menu.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_submit.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_today.xml" value="0.123" />
         <entry key="app/src/main/res/drawable/ic_today1.xml" value="0.123" />

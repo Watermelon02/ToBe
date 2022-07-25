@@ -22,15 +22,16 @@ class DateViewModel : ViewModel() {
 
     //上方vp中存储的day
     val dayFragmentDays = MutableStateFlow(listOf<Day>())
-    val collapsedState= MutableStateFlow(DateViewModel.CollapsedState.COLLAPSED)
+    val collapsedState = MutableStateFlow(DateViewModel.CollapsedState.COLLAPSED)
     var isTodoListChange = MutableSharedFlow<Long>()
+    var queryTodoState = MutableStateFlow(QueryTodoState.NOT_FINISHED)
     fun emitCollapsedState(state: DateViewModel.CollapsedState) {
         viewModelScope.launch {
             collapsedState.emit(state)
         }
     }
 
-    fun emitTodoListChange(){
+    fun emitTodoListChange() {
         viewModelScope.launch(Dispatchers.IO) {
             isTodoListChange.emit(System.currentTimeMillis())
         }
@@ -42,8 +43,20 @@ class DateViewModel : ViewModel() {
         }
     }
 
+    fun changeQueryTodoState() {
+        if (queryTodoState.value == QueryTodoState.NOT_FINISHED) {
+            viewModelScope.launch { queryTodoState.emit(QueryTodoState.FINISHED) }
+        } else {
+            viewModelScope.launch { queryTodoState.emit(QueryTodoState.NOT_FINISHED) }
+        }
+    }
+
     //上方vp的折叠状态
     enum class CollapsedState {
-        EXPAND, COLLAPSED, HALF_EXPAND,SCROLLING
+        EXPAND, COLLAPSED, HALF_EXPAND, SCROLLING
+    }
+
+    enum class QueryTodoState {
+        FINISHED, NOT_FINISHED
     }
 }

@@ -61,27 +61,58 @@
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@id/activity_date_week_list" />
 
-        <watermelon.tobe.view.DirectionFloatingButton
-            android:id="@+id/activity_date_view_add_button"
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/activity_date_list_change_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:src="@drawable/ic_add"
             android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/white"
+            android:src="@drawable/ic_list"
+            android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@id/activity_date_view_pager_day"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activity_date_view_pager_month"
             app:rippleColor="#FCFCFC" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/activity_date_view_today_button"
+            android:id="@+id/activity_date_add_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
             android:backgroundTint="@color/white"
-            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_add"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/activity_date_view_pager_day"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_date_view_pager_month"
+            app:rippleColor="#FCFCFC" />
+
+        <watermelon.tobe.view.DirectionFloatingButton
+            android:id="@+id/activity_date_menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu"
+            android:layout_marginEnd="20dp"
+            android:elevation="0dp"
+            android:backgroundTint="@color/white"
+            app:layout_constraintBottom_toTopOf="@id/activity_date_view_pager_day"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_date_view_pager_month"
+            app:rippleColor="#FCFCFC" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/activity_date_today_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/white"
             android:src="@drawable/ic_today"
             app:layout_constraintBottom_toTopOf="@id/activity_date_view_pager_day"
-            app:layout_constraintRight_toLeftOf="@id/activity_date_view_add_button"
-            app:layout_constraintTop_toBottomOf="@id/activity_date_view_pager_month"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_date_menu_button"
             app:rippleColor="#FCFCFC" />
 
         <watermelon.tobe.view.CollapsedViewPagerLayout
@@ -95,14 +126,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </watermelon.tobe.view.CollapsedViewPagerLayout>
+
         <ImageView
             android:id="@+id/activity_date_img_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_user"
-            app:layout_constraintTop_toTopOf="@id/activity_date_text_month"
-            app:layout_constraintBottom_toBottomOf="@id/activity_date_text_month"
             android:layout_marginEnd="30dp"
-            app:layout_constraintRight_toRightOf="parent"/>
+            android:src="@drawable/ic_user"
+            app:layout_constraintBottom_toBottomOf="@id/activity_date_text_month"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/activity_date_text_month" />
     </watermelon.tobe.view.CollapsedParentLayout>
 </layout>
