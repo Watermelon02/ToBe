@@ -1,4 +1,4 @@
-![logo](/Users/xigua/Desktop/Android/ToBe/pic/logo.png)
+![logo](./pic/logo.png)
 
 # ToBe
 
