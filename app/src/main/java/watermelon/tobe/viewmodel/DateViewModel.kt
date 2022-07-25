@@ -3,6 +3,7 @@ package watermelon.tobe.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import watermelon.tobe.repo.bean.Day
@@ -33,6 +34,8 @@ class DateViewModel : ViewModel() {
 
     fun emitTodoListChange() {
         viewModelScope.launch(Dispatchers.IO) {
+            //延迟一下等数据保存之后再去query，不然会查询不到新增数据
+            delay(30)
             isTodoListChange.emit(System.currentTimeMillis())
         }
     }

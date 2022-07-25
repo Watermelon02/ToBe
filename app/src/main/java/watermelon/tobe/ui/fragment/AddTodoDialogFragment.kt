@@ -134,7 +134,7 @@ class AddTodoDialogFragment : BottomSheetDialogFragment() {
             22,
             23,
             24,
-            2,
+            25,
             26,
             27,
             28,

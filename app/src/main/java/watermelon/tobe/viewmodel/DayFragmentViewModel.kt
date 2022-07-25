@@ -72,7 +72,8 @@ class DayFragmentViewModel : ViewModel() {
                 if (todo.dateStr == DateCalculator.todayDate) {
                     BaseApp.todoManagerBinder?.deleteTodo(todo)
                 }
-                delay(10)
+                //延迟一下等数据保存之后再去query，不然会查询不到新增数据
+                delay(30)
                 TodoRepository.queryTodoList(date = todo.dateStr, status = 0).collectLatest {
                     todoList.emit(it)
                 }
