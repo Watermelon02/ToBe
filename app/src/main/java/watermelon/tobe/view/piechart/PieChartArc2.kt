@@ -64,7 +64,7 @@ class PieChartArc2(context: Context?, attrs: AttributeSet?) : PieChartView(conte
             width.toFloat(),
             width.toFloat(),
             120f,
-            120f,
+            110f,
             true,
             notFinishedPaint)
         canvas.drawCircle(width / 2f, height / 2f, radius - 15, circlePaint)

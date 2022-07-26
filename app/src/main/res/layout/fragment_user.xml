@@ -30,6 +30,15 @@
                     android:layout_height="match_parent"/>
             </watermelon.tobe.view.piechart.PieChartViewGroup>
             <TextView
+                android:id="@+id/fragment_user_account_pie_chart_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/store_my_stamp_number"
+                app:layout_constraintTop_toTopOf="@id/fragment_user_account_pie_chart"
+                app:layout_constraintBottom_toBottomOf="@id/fragment_user_account_pie_chart"
+                app:layout_constraintLeft_toLeftOf="@id/fragment_user_account_pie_chart"
+                app:layout_constraintRight_toRightOf="@id/fragment_user_account_pie_chart"/>
+            <TextView
                 android:id="@+id/fragment_user_account_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

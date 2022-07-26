@@ -11,8 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.flow.collectLatest
 import watermelon.tobe.base.FRAGMENT_LOGIN
 import watermelon.tobe.databinding.FragmentUserBinding
+import watermelon.tobe.util.extension.safeLaunch
 import watermelon.tobe.viewmodel.UserViewModel
 
 /**
@@ -38,6 +40,12 @@ class UserFragment : DialogFragment() {
         binding.fragmentUserTodoAccountEdit.text =
             Editable.Factory.getInstance().newEditable(viewModel.user.value?.data?.username)
         binding.fragmentUserAccountPieChart.start()
+        safeLaunch {
+            viewModel.finishPercent.collectLatest {
+                binding.fragmentUserAccountPieChartPercent.text = (it*100).toString()+"%"
+            }
+        }
+        viewModel.queryTodoFinishState()
         return AlertDialog.Builder(requireContext()).setView(binding.root).create()
     }
 

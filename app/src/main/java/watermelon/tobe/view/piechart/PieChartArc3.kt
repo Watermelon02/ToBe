@@ -52,7 +52,7 @@ class PieChartArc3(context: Context?, attrs: AttributeSet?) : PieChartView(conte
             null,
             Shader.TileMode.REPEAT
         )
-        canvas.drawArc(0f, 0f, width.toFloat(), width.toFloat(), 240f, 120f, true, finishPaint)
+        canvas.drawArc(0f, 0f, width.toFloat(), width.toFloat(), 240f, 110f, true, finishPaint)
         canvas.drawCircle(width / 2f, height / 2f, radius - 15, circlePaint)
 
     }

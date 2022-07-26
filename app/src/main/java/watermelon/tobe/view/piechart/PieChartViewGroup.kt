@@ -52,17 +52,20 @@ class PieChartViewGroup(context: Context, attrs: AttributeSet?) :
     }
 
     fun start() {
-        for (i in 0..2){
-            if (getChildAt(i) is PieChartView) (getChildAt(i) as PieChartView).start()
-            val animator = ValueAnimator.ofFloat(0f,360f)
-            animator.addUpdateListener {
-                rotation = it.animatedValue as Float
+            scaleY = 1.3f
+            scaleX =1.3f
+            animate().scaleY(1f).scaleX(1f)
+            for (i in 0..2){
+                if (getChildAt(i) is PieChartView) (getChildAt(i) as PieChartView).start()
+                val animator = ValueAnimator.ofFloat(0f,360f)
+                animator.addUpdateListener {
+                    rotation = it.animatedValue as Float
+                }
+                animator.repeatMode = ValueAnimator.RESTART
+                animator.repeatCount = ValueAnimator.INFINITE
+                animator.duration = 18000
+                animator.start()
             }
-            animator.repeatMode = ValueAnimator.RESTART
-            animator.repeatCount = ValueAnimator.INFINITE
-            animator.duration = 18000
-            animator.start()
-        }
     }
 
     enum class TouchState {

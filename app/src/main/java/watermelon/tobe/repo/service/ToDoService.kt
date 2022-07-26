@@ -64,6 +64,15 @@ interface ToDoService {
         @Query("priority") priority: Int
     ): QueryTodoResponse
 
+    @POST("lg/todo/v2/list/1/json")
+    suspend fun queryAll(): QueryTodoResponse
+
+    @POST("lg/todo/v2/list/1/json?status=0")
+    suspend fun queryAllFinished(): QueryTodoResponse
+
+    @POST("lg/todo/v2/list/1/json?status=1")
+    suspend fun queryAllNotFinished(): QueryTodoResponse
+
     companion object {
         val INSTANCE by lazy { ToDoApiGenerator.getApiService(ToDoService::class) }
     }

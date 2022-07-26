@@ -143,4 +143,16 @@ object TodoRepository {
             }
         }
     }
+
+    suspend fun getFinishPercent(): Float {
+        var percent = 0f
+        try {
+            val all = ToDoService.INSTANCE.queryAll().data.size
+            val finished = ToDoService.INSTANCE.queryAllFinished().data.size
+            percent = finished.toFloat()/all.toFloat()
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+        return percent
+    }
 }
