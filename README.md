@@ -114,6 +114,36 @@ fun queryTodoList(status: Int = -1, date: String, priority: Int = 0, index: Int 
 
 因为需要满足在`添加\删除`Todo后，Service能及时更改数据，所以需要通过`Binder`实现通信。这里通过`AIDL`然后重写`Stub`的方式完成（总不能要我手写吧）
 
+> Activity
+
+```kotlin
+//绑定启动TodoManagerService
+private fun bindTodoManagerService() {
+    val todoManagerServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            BaseApp.todoManagerBinder = TodoManager.Stub.asInterface(service)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {}
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        bindService(Intent(this@DateActivity, TodoManagerService::class.java),
+            todoManagerServiceConnection,
+            Context.BIND_AUTO_CREATE)
+    }
+
+}
+```
+
+> Service
+
+```kotlin
+override fun onBind(intent: Intent?): IBinder {
+    iBinder.queryTodoList()
+    return iBinder
+}
+```
+
 ## 不足
 
 在自定义View方面还不够熟练，浪费了很多时间，而且最后的组件间耦合度比较高。对于Flow的使用不够熟练，有许多暗病.

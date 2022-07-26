@@ -37,6 +37,7 @@ class UserFragment : DialogFragment() {
             Editable.Factory.getInstance().newEditable(viewModel.user.value?.data?.publicName)
         binding.fragmentUserTodoAccountEdit.text =
             Editable.Factory.getInstance().newEditable(viewModel.user.value?.data?.username)
+        binding.fragmentUserAccountPieChart.start()
         return AlertDialog.Builder(requireContext()).setView(binding.root).create()
     }
 

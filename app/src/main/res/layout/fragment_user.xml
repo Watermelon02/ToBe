@@ -11,15 +11,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="20dp">
-            <ImageView
-                android:id="@+id/fragment_user_img"
-                android:src="@drawable/ic_user_circle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <watermelon.tobe.view.piechart.PieChartViewGroup
+                android:id="@+id/fragment_user_account_pie_chart"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                >
+                <watermelon.tobe.view.piechart.PieChartArc1
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <watermelon.tobe.view.piechart.PieChartArc2
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <watermelon.tobe.view.piechart.PieChartArc3
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </watermelon.tobe.view.piechart.PieChartViewGroup>
             <TextView
                 android:id="@+id/fragment_user_account_text"
                 android:layout_width="wrap_content"
@@ -29,7 +38,7 @@
                 android:fontFamily="@font/store_my_stamp_number"
                 android:text="@string/account"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/fragment_user_img" />
+                app:layout_constraintTop_toBottomOf="@id/fragment_user_account_pie_chart" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/fragment_user_account_edit_layout"
