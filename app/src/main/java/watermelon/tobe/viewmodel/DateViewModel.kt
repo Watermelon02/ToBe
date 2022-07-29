@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.repo.repository.DateRepository
-import watermelon.tobe.service.aidl.TodoManager
 import java.util.*
 
 /**
@@ -22,35 +24,39 @@ class DateViewModel : ViewModel() {
     var currentMonth = Calendar.getInstance()[Calendar.MONTH] + 1
 
     //上方vp中存储的day
-    val dayFragmentDays = MutableStateFlow(listOf<Day>())
-    val collapsedState = MutableStateFlow(DateViewModel.CollapsedState.COLLAPSED)
-    var isTodoListChange = MutableSharedFlow<Long>()
-    var queryTodoState = MutableStateFlow(QueryTodoState.NOT_FINISHED)
+    private val _dayFragmentDays = MutableStateFlow(listOf<Day>())
+    val dayFragmentDays = _dayFragmentDays.asStateFlow()
+    private val _collapsedState = MutableStateFlow(DateViewModel.CollapsedState.COLLAPSED)
+    val collapsedState = _collapsedState.asStateFlow()
+    private val _isTodoListChange = MutableSharedFlow<Long>()
+    val isTodoListChange = _isTodoListChange.asSharedFlow()
+    private val _queryTodoState = MutableStateFlow(QueryTodoState.NOT_FINISHED)
+    val queryTodoState = _queryTodoState.asStateFlow()
     fun emitCollapsedState(state: DateViewModel.CollapsedState) {
         viewModelScope.launch {
-            collapsedState.emit(state)
+            _collapsedState.emit(state)
         }
     }
 
     fun emitTodoListChange() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch{
             //延迟一下等数据保存之后再去query，不然会查询不到新增数据
             delay(30)
-            isTodoListChange.emit(System.currentTimeMillis())
+            _isTodoListChange.emit(System.currentTimeMillis())
         }
     }
 
     fun emitDays(month: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            dayFragmentDays.emit(DateRepository.queryMonth(month))
+            _dayFragmentDays.emit(DateRepository.queryMonth(month))
         }
     }
 
     fun changeQueryTodoState() {
         if (queryTodoState.value == QueryTodoState.NOT_FINISHED) {
-            viewModelScope.launch { queryTodoState.emit(QueryTodoState.FINISHED) }
+            viewModelScope.launch { _queryTodoState.emit(QueryTodoState.FINISHED) }
         } else {
-            viewModelScope.launch { queryTodoState.emit(QueryTodoState.NOT_FINISHED) }
+            viewModelScope.launch { _queryTodoState.emit(QueryTodoState.NOT_FINISHED) }
         }
     }
 

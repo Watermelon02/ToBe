@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import watermelon.tobe.base.BaseApp
 import watermelon.tobe.repo.repository.TodoRepository
@@ -21,12 +18,13 @@ import watermelon.tobe.util.local.DateCalculator
  * date : 2022/7/19 12:51
  */
 class DayFragmentViewModel : ViewModel() {
-    val todoList = MutableStateFlow<List<Todo>>(listOf())
+    private val _todoList = MutableStateFlow<List<Todo>>(listOf())
+    val todoList = _todoList.asStateFlow()
     //查询未完成的Todo
     fun queryTodoListNotFinished(date: String) {
         viewModelScope.launch(Dispatchers.IO) {
             TodoRepository.queryTodoList(date = date, status = 0).collectLatest {
-                todoList.emit(it)
+                _todoList.emit(it)
             }
         }
     }
@@ -35,7 +33,7 @@ class DayFragmentViewModel : ViewModel() {
     fun queryTodoListFinished(date: String) {
         viewModelScope.launch(Dispatchers.IO) {
             TodoRepository.queryTodoList(date = date, status = 1).collectLatest {
-                todoList.emit(it)
+                _todoList.emit(it)
             }
         }
     }
@@ -46,7 +44,7 @@ class DayFragmentViewModel : ViewModel() {
                 TodoRepository.deleteTodo(todo)
                 //如果是删除的本日todo,通过binder通知TodoManagerService
                 if (todo.dateStr == DateCalculator.todayDate) BaseApp.todoManagerBinder?.deleteTodo(todo)
-                todoList.update {
+                _todoList.update {
                     for (i in 0..it.size) {
                         if (it[i] == todo) return@update it.subList(0, i) + it.subList(i + 1, it.size)
                     }
@@ -75,7 +73,7 @@ class DayFragmentViewModel : ViewModel() {
                 //延迟一下等数据保存之后再去query，不然会查询不到新增数据
                 delay(30)
                 TodoRepository.queryTodoList(date = todo.dateStr, status = 0).collectLatest {
-                    todoList.emit(it)
+                    _todoList.emit(it)
                 }
             }
         }

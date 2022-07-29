@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import watermelon.tobe.base.BaseApp
 import watermelon.tobe.repo.repository.TodoRepository
@@ -18,8 +19,10 @@ import watermelon.tobe.repo.service.ToDoService
  */
 class UserViewModel : ViewModel() {
     val user by lazy { UserRepository.user }
-    val isShowing = MutableStateFlow(false)
-    val finishPercent = MutableStateFlow(0f)
+    private val _isShowing = MutableStateFlow(false)
+    val isShowing = _isShowing.asStateFlow()
+    private val _finishPercent = MutableStateFlow(0f)
+    val finishPercent = _finishPercent.asStateFlow()
     fun login(userName: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             UserRepository.login(userName, password)
@@ -45,13 +48,13 @@ class UserViewModel : ViewModel() {
 
     fun emitShowState(boolean: Boolean) {
         viewModelScope.launch {
-            isShowing.emit(boolean)
+            _isShowing.emit(boolean)
         }
     }
 
     fun queryTodoFinishState(){
         viewModelScope.launch(Dispatchers.IO) {
-            finishPercent.emit(TodoRepository.getFinishPercent())
+            _finishPercent.emit(TodoRepository.getFinishPercent())
         }
     }
 }

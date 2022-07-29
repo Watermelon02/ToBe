@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import watermelon.tobe.base.BaseApp
 import watermelon.tobe.repo.repository.TodoRepository
@@ -24,7 +25,8 @@ class AddTodoFragmentViewModel : ViewModel() {
     var date = ""
     var title = ""
     var content = ""
-    val isShowing = MutableStateFlow(false)
+    private val _isShowing = MutableStateFlow(false)
+    val isShowing = _isShowing.asStateFlow()
 
     fun addTodo() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,7 +49,7 @@ class AddTodoFragmentViewModel : ViewModel() {
 
     fun emitShowingState(boolean: Boolean) {
         viewModelScope.launch {
-            isShowing.emit(boolean)
+            _isShowing.emit(boolean)
         }
     }
 }
