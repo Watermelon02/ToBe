@@ -1,13 +1,16 @@
 package watermelon.tobe.service
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
-import android.view.LayoutInflater
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -18,7 +21,7 @@ import watermelon.tobe.ui.activity.DateActivity
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
-class TodoManagerService : Service() {
+class TodoManagerService : LifecycleService() {
     //当日的Todo list
     companion object {
         const val NOT_FINISH = 0
@@ -30,7 +33,6 @@ class TodoManagerService : Service() {
     }
 
     private var todayList = MutableStateFlow<List<Todo>>(listOf())
-    private var jobList = arrayListOf<Job>()
     private val manager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val channel by lazy {
         NotificationChannel("42",
@@ -43,23 +45,22 @@ class TodoManagerService : Service() {
             Intent(this, DateActivity::class.java),
             0)
     }
-    private val iBinder by lazy { TodoManagerStub(todayList, jobList, manager) }
+    private val iBinder by lazy { TodoManagerStub(todayList, this,manager) }
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
-        val job = GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             todayList.collectLatest {
                 if (it.isNotEmpty()) createNotFinishedNotification(it) else createFinishedNotification()
             }
         }
-        jobList.add(job)
-        val job2 = GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             flow {
                 for (i in 0L..Long.MAX_VALUE) {
                     //每半分钟检查一次，发送通知
                     emit(i)
-                    delay(MINUTE/2)
+                    delay(MINUTE / 2)
                 }
             }.collectLatest {
                 val calendar = Calendar.getInstance()
@@ -72,24 +73,17 @@ class TodoManagerService : Service() {
                             System.currentTimeMillis() - calendar.timeInMillis)
                     } else if (calendar.timeInMillis - System.currentTimeMillis() in 1 until INTERVAL) {
                         createExpiringSoonNotification(todayList.value[i],
-                            calendar.timeInMillis-System.currentTimeMillis())
+                            calendar.timeInMillis - System.currentTimeMillis())
                     }
                 }
             }
         }
-        jobList.add(job2)
     }
 
-    override fun onBind(intent: Intent?): IBinder {
+    override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
         iBinder.queryTodoList()
         return iBinder
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        for (i in 0 until jobList.size) {
-            jobList[i].cancel()
-        }
     }
 
     private fun createNotFinishedNotification(todoList: List<Todo>) {
@@ -111,8 +105,8 @@ class TodoManagerService : Service() {
     }
 
     private fun createOutOfDateNotification(todo: Todo, time: Long) {
-        val hour = time / (MINUTE*60)
-        val minute = (time - (hour*60* MINUTE))/ MINUTE
+        val hour = time / (MINUTE * 60)
+        val minute = (time - (hour * 60 * MINUTE)) / MINUTE
         val text = "${todo.title}  已经在${hour}小时${minute}分钟前过期\ncontent:\n  ${todo.content}"
         //传入营业进度，生成相应的Notification对象
         manager.createNotificationChannel(channel)
@@ -123,8 +117,8 @@ class TodoManagerService : Service() {
     }
 
     private fun createExpiringSoonNotification(todo: Todo, time: Long) {
-        val hour = time / (MINUTE*60)
-        val minute = (time - (hour*60* MINUTE))/ MINUTE
+        val hour = time / (MINUTE * 60)
+        val minute = (time - (hour * 60 * MINUTE)) / MINUTE
         val text = "${todo.title}  还有${hour}小时${minute}分钟截止,抓紧时间完成吧！\ncontent:\n" +
                 "  ${todo.content}"
         //传入营业进度，生成相应的Notification对象

@@ -1,10 +1,9 @@
 package watermelon.tobe.service
 
 import android.app.NotificationManager
-import android.util.Log
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -21,7 +20,7 @@ import watermelon.tobe.util.local.DateCalculator
  */
 class TodoManagerStub(
     private val todayList: MutableStateFlow<List<Todo>>,
-    private val jobList: ArrayList<Job>,
+    private val service: LifecycleService,
     private val manager: NotificationManager,
 ) : TodoManager.Stub() {
     override fun addTodo(todo: Todo?) {
@@ -49,16 +48,15 @@ class TodoManagerStub(
 
     //当推出时，调用此方法，清空todayList，并清空notification
     override fun exit() {
-        val job = GlobalScope.launch(Dispatchers.IO) {
+        service.lifecycleScope.launch(Dispatchers.IO) {
             todayList.emit(TodoRepository.emptyData)
             manager.cancelAll()
         }
-        jobList.add(job)
     }
 
     //查询今日未完成的Todo
     fun queryTodoList() {
-        val job = GlobalScope.launch {
+        service.lifecycleScope.launch {
             TodoRepository.queryTodoList(status = 0, date = DateCalculator.todayDate)
                 .collectLatest {
                     if (it.isNotEmpty() && it[0].priority != -1) {//排除发送Loading,Connect_Fail等状况
@@ -66,13 +64,11 @@ class TodoManagerStub(
                     }
                 }
         }
-        jobList.add(job)
     }
 
     private fun emitTodoList(newList: List<Todo>) {
-        val job = GlobalScope.launch {
+        service.lifecycleScope.launch {
             todayList.emit(newList.toList())
         }
-        jobList.add(job)
     }
 }
