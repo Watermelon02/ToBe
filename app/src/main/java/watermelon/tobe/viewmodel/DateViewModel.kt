@@ -2,7 +2,6 @@ package watermelon.tobe.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,13 +25,13 @@ class DateViewModel : ViewModel() {
     //上方vp中存储的day
     private val _dayFragmentDays = MutableStateFlow(listOf<Day>())
     val dayFragmentDays = _dayFragmentDays.asStateFlow()
-    private val _collapsedState = MutableStateFlow(DateViewModel.CollapsedState.COLLAPSED)
+    private val _collapsedState = MutableStateFlow(CollapsedState.COLLAPSED)
     val collapsedState = _collapsedState.asStateFlow()
     private val _isTodoListChange = MutableSharedFlow<Long>()
     val isTodoListChange = _isTodoListChange.asSharedFlow()
     private val _queryTodoState = MutableStateFlow(QueryTodoState.NOT_FINISHED)
     val queryTodoState = _queryTodoState.asStateFlow()
-    fun emitCollapsedState(state: DateViewModel.CollapsedState) {
+    fun emitCollapsedState(state: CollapsedState) {
         viewModelScope.launch {
             _collapsedState.emit(state)
         }
@@ -47,7 +46,7 @@ class DateViewModel : ViewModel() {
     }
 
     fun emitDays(month: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _dayFragmentDays.emit(DateRepository.queryMonth(month))
         }
     }

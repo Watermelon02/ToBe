@@ -3,7 +3,6 @@ package watermelon.tobe.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -24,14 +23,14 @@ class UserViewModel : ViewModel() {
     private val _finishPercent = MutableStateFlow(0f)
     val finishPercent = _finishPercent.asStateFlow()
     fun login(userName: String, password: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             UserRepository.login(userName, password)
             BaseApp.todoManagerBinder?.login()
         }
     }
 
     fun exit() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             ToDoService.INSTANCE.exit()
             user.emit(null)
             BaseApp.todoManagerBinder?.exit()
@@ -41,7 +40,7 @@ class UserViewModel : ViewModel() {
     }
 
     fun register(userName: String, password: String, rePassword: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             UserRepository.register(userName, password, rePassword)
         }
     }
@@ -53,7 +52,7 @@ class UserViewModel : ViewModel() {
     }
 
     fun queryTodoFinishState(){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _finishPercent.emit(TodoRepository.getFinishPercent())
         }
     }

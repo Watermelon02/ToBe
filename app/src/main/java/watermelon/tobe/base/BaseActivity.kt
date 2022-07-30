@@ -1,4 +1,4 @@
-package watermelon.lightmusic.base
+package watermelon.tobe.base
 
 import android.graphics.Color
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
 
 /**
  * author : Watermelon02

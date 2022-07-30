@@ -134,7 +134,7 @@ object TodoRepository {
     }
 
     //比对两端数据，将改变后的数据更新到数据库中
-    private fun updateTodoList(remote: QueryTodoResponse, local: List<Todo>) {
+    private suspend fun updateTodoList(remote: QueryTodoResponse, local: List<Todo>) {
         if (remote.data.datas.isNotEmpty() && local.isNotEmpty()) {
             for (i in 0..local.size) {
                 if (remote.data.datas[i] != local[i]) {

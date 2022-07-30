@@ -2,7 +2,6 @@ package watermelon.tobe.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import watermelon.tobe.repo.repository.TodoRepository
 import watermelon.tobe.service.aidl.Todo
@@ -20,7 +19,7 @@ class UpdateTodoFragmentViewModel : ViewModel() {
     var day = 0
     var hour = 0
     fun updateTodo() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             TodoRepository.updateTodo(
                 todo.id,
                 todo.title,

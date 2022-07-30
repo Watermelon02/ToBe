@@ -1,7 +1,5 @@
 package watermelon.tobe.ui.fragment
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -24,7 +22,12 @@ import watermelon.tobe.viewmodel.UserViewModel
  */
 class UserFragment : DialogFragment() {
     private lateinit var viewModel: UserViewModel
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         viewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
         val binding = FragmentUserBinding.inflate(layoutInflater).apply {
             fragmentUserExit.setOnClickListener {
@@ -40,24 +43,15 @@ class UserFragment : DialogFragment() {
         binding.fragmentUserTodoAccountEdit.text =
             Editable.Factory.getInstance().newEditable(viewModel.user.value?.data?.username)
         binding.fragmentUserAccountPieChart.start()
-        safeLaunch {
+        viewLifecycleOwner.safeLaunch {
             viewModel.finishPercent.collectLatest {
                 binding.fragmentUserAccountPieChartPercent.text = (it*100).toString()+"%"
             }
         }
         viewModel.queryTodoFinishState()
-        return AlertDialog.Builder(requireContext()).setView(binding.root).create()
-    }
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
         //实现圆角
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return binding.root
     }
 
     override fun onDestroy() {

@@ -11,20 +11,20 @@ import watermelon.tobe.repo.bean.Day
 @Dao
 interface DayDao {
     @Query("SELECT * FROM day WHERE date =:date")
-    fun queryDay(date: String): Day?
+    suspend fun queryDay(date: String): Day?
 
     @Query("SELECT * FROM day WHERE date LIKE '%'|| :date ||'%'")
-    fun queryDays(date: String): List<Day>
+    suspend fun queryDays(date: String): List<Day>
 
     @Query("SELECT * FROM day")
-    fun queryAllDays(): List<Day>
+    suspend fun queryAllDays(): List<Day>
 
     @Delete
-    fun deleteDay(day: Day)
+    suspend fun deleteDay(day: Day)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(day: Day)
+    suspend fun insert(day: Day)
 
     @Update
-    fun update(day: Day)
+    suspend fun update(day: Day)
 }

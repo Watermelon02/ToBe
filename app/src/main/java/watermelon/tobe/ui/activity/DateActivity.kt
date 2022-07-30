@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.flow.collectLatest
-import watermelon.lightmusic.base.BaseActivity
+import watermelon.tobe.base.BaseActivity
 import watermelon.tobe.R
 import watermelon.tobe.base.BaseApp
 import watermelon.tobe.base.FRAGMENT_ADD_TODO

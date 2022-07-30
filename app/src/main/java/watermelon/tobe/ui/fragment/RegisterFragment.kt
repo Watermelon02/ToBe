@@ -1,7 +1,5 @@
 package watermelon.tobe.ui.fragment
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -11,9 +9,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.collectLatest
-import watermelon.tobe.util.extension.toast
 import watermelon.tobe.databinding.FragmentRegisterBinding
 import watermelon.tobe.util.extension.safeLaunch
+import watermelon.tobe.util.extension.toast
 import watermelon.tobe.viewmodel.UserViewModel
 
 /**
@@ -25,11 +23,14 @@ import watermelon.tobe.viewmodel.UserViewModel
 class RegisterFragment : DialogFragment() {
     private lateinit var viewModel: UserViewModel
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         viewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
         val binding = FragmentRegisterBinding.inflate(layoutInflater).apply {
             fragmentRegisterTextLogin.setOnClickListener {
-//                activity?.supportFragmentManager?.findFragmentByTag(FRAGMENT_LOGIN).s
                 dismiss()
             }
             fragmentLoginButton.setOnClickListener {
@@ -38,7 +39,7 @@ class RegisterFragment : DialogFragment() {
                 val rePassword = fragmentRegisterRePasswordEdit.text.toString()
                 viewModel.register(userName, password, rePassword)
             }
-            safeLaunch {
+            viewLifecycleOwner.safeLaunch {
                 viewModel.user.collectLatest {
                     if (it != null) {
                         if (it.errorCode == 0) {
@@ -53,18 +54,9 @@ class RegisterFragment : DialogFragment() {
                 }
             }
         }
-        return AlertDialog.Builder(requireContext()).setView(binding.root).create()
-    }
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
         //实现圆角
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return binding.root
     }
 
 }

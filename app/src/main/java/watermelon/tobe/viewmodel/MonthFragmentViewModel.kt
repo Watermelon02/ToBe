@@ -2,10 +2,8 @@ package watermelon.tobe.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import watermelon.tobe.repo.bean.Day
 import watermelon.tobe.repo.repository.DateRepository
@@ -21,7 +19,7 @@ class MonthFragmentViewModel : ViewModel() {
     private val _days = MutableStateFlow(listOf<Day>())
     val days = _days.asStateFlow()
     fun emitDays(month: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _days.emit(getWeekDayAtNextMonth(getWeekDayAtLastMonth(DateRepository.queryMonth(month))))
         }
     }

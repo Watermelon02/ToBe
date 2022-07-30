@@ -58,7 +58,7 @@ class TodoManagerStub(
 
     //查询今日未完成的Todo
     fun queryTodoList() {
-        val job = GlobalScope.launch(Dispatchers.IO) {
+        val job = GlobalScope.launch {
             TodoRepository.queryTodoList(status = 0, date = DateCalculator.todayDate)
                 .collectLatest {
                     if (it.isNotEmpty() && it[0].priority != -1) {//排除发送Loading,Connect_Fail等状况

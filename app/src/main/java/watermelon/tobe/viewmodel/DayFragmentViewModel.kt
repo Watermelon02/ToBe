@@ -1,11 +1,12 @@
 package watermelon.tobe.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import watermelon.tobe.base.BaseApp
 import watermelon.tobe.repo.repository.TodoRepository
@@ -22,7 +23,7 @@ class DayFragmentViewModel : ViewModel() {
     val todoList = _todoList.asStateFlow()
     //查询未完成的Todo
     fun queryTodoListNotFinished(date: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             TodoRepository.queryTodoList(date = date, status = 0).collectLatest {
                 _todoList.emit(it)
             }
@@ -31,7 +32,7 @@ class DayFragmentViewModel : ViewModel() {
 
     //查询已完成的Todo
     fun queryTodoListFinished(date: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             TodoRepository.queryTodoList(date = date, status = 1).collectLatest {
                 _todoList.emit(it)
             }
@@ -39,7 +40,7 @@ class DayFragmentViewModel : ViewModel() {
     }
 
     fun deleteTodo(todo: Todo) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (todo.priority!=-1){//用if排除Empty,Connect Fail,Loading状态的T odo
                 TodoRepository.deleteTodo(todo)
                 //如果是删除的本日todo,通过binder通知TodoManagerService
@@ -56,7 +57,7 @@ class DayFragmentViewModel : ViewModel() {
 
     //完成todo
     fun finishTodo(todo: Todo) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (todo.priority!=-1){//用if排除Empty,Connect Fail,Loading状态的T odo
                 TodoRepository.updateTodo(
                     id = todo.id,

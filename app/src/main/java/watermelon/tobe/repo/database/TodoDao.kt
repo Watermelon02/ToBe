@@ -11,20 +11,20 @@ import watermelon.tobe.service.aidl.Todo
 @Dao
 interface TodoDao {
     @Query("SELECT * FROM todo WHERE date =:date")
-    fun queryTodo(date: String): Todo?
+    suspend fun queryTodo(date: String): Todo?
 
     @Query("SELECT * FROM todo WHERE date LIKE '%'|| :date ||'%'")
-    fun queryTodos(date: String): List<Todo>
+    suspend fun queryTodos(date: String): List<Todo>
 
     @Query("SELECT * FROM todo")
-    fun queryAllTodos(): List<Todo>
+    suspend fun queryAllTodos(): List<Todo>
 
     @Delete
-    fun deleteTodo(Todo: Todo)
+    suspend fun deleteTodo(Todo: Todo)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(Todo: Todo)
+    suspend fun insert(Todo: Todo)
 
     @Update
-    fun update(Todo: Todo)
+    suspend fun update(Todo: Todo)
 }

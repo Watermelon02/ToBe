@@ -1,9 +1,7 @@
 package watermelon.tobe.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +27,7 @@ class AddTodoFragmentViewModel : ViewModel() {
     val isShowing = _isShowing.asStateFlow()
 
     fun addTodo() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             date = DateCalculator.formatDateForLocalQueryHoliday("${year}-${month}-${day}")
             TodoRepository.addTodo(title, content, date, priority = hour)
             //如果是增加的本日todo,通过binder通知TodoManagerService
